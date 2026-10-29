@@ -1,0 +1,124 @@
+:root {
+  --ff-gold: #d4af37;
+  --ff-gold-light: #f5e08e;
+  --ff-gold-dark: #8a6d1b;
+  --ff-bg-dark: #0b0d13;
+  --ff-panel: rgba(18, 21, 30, 0.92);
+  --ff-crimson: #b91c1c;
+  --ff-aether: #38bdf8;
+}
+body {
+  font-family: "Inter", "Noto Sans TC", "Noto Sans JP", sans-serif;
+  background-color: #07090e;
+  color: #f3f4f6;
+  overflow-x: hidden;
+}
+.font-serif-tc {
+  font-family: "Noto Serif TC", "Noto Sans JP", serif;
+}
+/* FFXIV Classic Gold Beveled Frame */
+.ff-window {
+  background: linear-gradient(
+    180deg,
+    rgba(26, 29, 41, 0.96) 0%,
+    rgba(14, 16, 24, 0.98) 100%
+  );
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow:
+    0 10px 30px -5px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 20px rgba(212, 175, 55, 0.05);
+}
+.ff-dialogue-box {
+  background: linear-gradient(
+    180deg,
+    rgba(20, 20, 26, 0.95) 0%,
+    rgba(10, 10, 14, 0.98) 100%
+  );
+  border: 2px solid #b38f36;
+  box-shadow:
+    0 0 0 1px #2a2111,
+    0 12px 32px rgba(0, 0, 0, 0.9),
+    inset 0 0 18px rgba(212, 175, 55, 0.08);
+}
+.ff-speaker-tag {
+  background: linear-gradient(90deg, #3b2d13 0%, #1f180a 100%);
+  border: 1px solid #d4af37;
+  color: #fae69e;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+.ff-btn-gold {
+  background: linear-gradient(180deg, #4a3818 0%, #2b200c 100%);
+  border: 1px solid #d4af37;
+  color: #fef08a;
+  transition: all 0.18s ease;
+}
+.ff-btn-gold:hover:not(:disabled) {
+  background: linear-gradient(180deg, #634b20 0%, #3d2e12 100%);
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.45);
+  transform: translateY(-1px);
+}
+.ff-btn-gold:active:not(:disabled) {
+  transform: translateY(0);
+}
+.char-correct {
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.35);
+}
+.char-current {
+  color: #fef08a;
+  background: rgba(212, 175, 55, 0.28);
+  border-bottom: 2px solid #facc15;
+  border-radius: 2px;
+  animation: pulseCursor 1.1s infinite;
+}
+.char-wrong {
+  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.45);
+  border-bottom: 2px solid #ef4444;
+  border-radius: 2px;
+}
+.char-pending {
+  color: #9ca3af;
+}
+.char-punct-auto {
+  color: #6b7280;
+}
+@keyframes pulseCursor {
+  0%,
+  100% {
+    background-color: rgba(212, 175, 55, 0.32);
+  }
+  50% {
+    background-color: rgba(212, 175, 55, 0.08);
+  }
+}
+@keyframes shakeError {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+.shake-anim {
+  animation: shakeError 0.25s ease-in-out;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0d13;
+}
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
