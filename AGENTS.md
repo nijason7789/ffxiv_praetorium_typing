@@ -17,9 +17,10 @@
 - `src/game/text.ts`：文字正規化、語言選取、標點略過。
 - `src/game/app.ts`：目前的遊戲控制、渲染、計分與結算。新增可獨立測試的遊戲規則時，優先抽成不依賴 DOM 的函式。
 - `src/ui/events.ts`：使用者操作與輸入法事件；`src/ui/dom.ts` 提供具型別及存在檢查的 DOM 存取。
-- `src/services/`：音效與 YouTube 控制，避免將外部播放邏輯混入文字比對或計分。
+- `src/services/`：打字音效與本機 BGM 控制，避免將播放邏輯混入文字比對或計分。
 - `src/styles/`：Tailwind 入口與主題樣式。新增 class 時須確認 Tailwind 能從原始碼掃描到完整名稱。
 - `public/images/`：圖片資產；新增圖片使用獨立檔案。
+- `public/audio/`：本機 BGM 音檔，隨靜態網站一併部署。
 - `tests/game.test.ts`：以 Vitest + happy-dom 執行的互動測試。
 
 ## 行為與實作原則
@@ -31,7 +32,7 @@
 - 既有輔助作答與計分規則是目前行為，不代表公平競賽規格。調整時說明對字速、精準度、Combo 與得分的影響。
 - 維持 TypeScript strict；優先補正確的型別，避免以 `any` 或停用檢查掩蓋問題。
 - 題目和使用者輸入優先透過 `textContent` 呈現；若必須產生 HTML，避免直接插入未受信任內容。
-- 保留素材版權標示。音效與 YouTube 的載入或播放失敗不應阻止作答。
+- 保留素材版權標示。音效與 BGM 的載入或播放失敗不應阻止作答。
 - 不直接編輯 `dist/`、`node_modules/` 或 `.npm-cache/`；依賴異動需同步更新 `package-lock.json`。
 
 ## 開發與驗證
@@ -39,5 +40,5 @@
 - 使用 npm 與現有 lockfile。`npm run dev` 啟動開發伺服器；`npm run preview` 預覽正式建置。
 - 程式碼異動後執行 `npm test` 與 `npm run build`；後者已包含 TypeScript 型別檢查。僅需單獨檢查型別時使用 `npm run typecheck`。
 - 針對新遊戲規則與錯誤修正增加能驗證行為的測試；純文件修改不必重跑遊戲測試。
-- happy-dom 測試不能證明真實瀏覽器的 IME、焦點、視覺版面、Web Audio 或 YouTube 播放正常。涉及這些行為時，進行適當的瀏覽器驗證；無法驗證則明確說明。
+- happy-dom 測試不能證明真實瀏覽器的 IME、焦點、視覺版面、Web Audio 或音檔播放正常。涉及這些行為時，進行適當的瀏覽器驗證；無法驗證則明確說明。
 - 完成時簡述修改內容、執行的驗證與尚未驗證的限制，不宣稱未執行的檢查已通過。

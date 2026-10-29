@@ -54,7 +54,7 @@
 
         <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
           歡迎來到蓋烏斯·范·巴埃薩軍團長的「天幕魔導城升降機必修課」。請選擇欲練習的語言版本以載入對應語言的「一般打字」與「隨機台詞填空」題庫（背景
-          BGM 預設為手動開啟）：
+          BGM 將於選擇版本後開始播放，可隨時暫停）：
         </p>
 
         <!-- 3 Language Cards -->
@@ -267,24 +267,6 @@
             >
           </button>
 
-          <!-- YouTube BGM Manual Toggle & Drawer Toggle -->
-          <button
-            id="btnToggleBgm"
-            type="button"
-            title="手動開啟或關閉背景 YouTube BGM"
-            class="px-2.5 py-1.5 rounded-md text-xs font-semibold bg-slate-900 border border-slate-700 text-slate-300 hover:border-amber-400/50 transition"
-          >
-            🔇 BGM：手動開啟
-          </button>
-          <button
-            id="btnToggleYtPanel"
-            type="button"
-            title="展開或隱藏 YouTube 串流播放視窗"
-            class="px-2.5 py-1.5 rounded-md text-xs font-medium bg-slate-900 border border-slate-700 text-slate-300 hover:border-amber-400/50"
-          >
-            📺 YT 視窗
-          </button>
-
           <!-- Sound Toggle -->
           <button
             id="btnToggleSound"
@@ -297,62 +279,56 @@
         </div>
       </div>
 
-      <!-- Collapsible / Background YouTube BGM Stream Bar (Manual Mode) -->
+      <!-- This audio element persists across questions, modes and language changes. -->
+      <audio
+        id="bgmAudio"
+        src="/audio/BGM_ORCH_570-天幕之下.ogg.mp3"
+        preload="auto"
+        loop
+      ></audio>
       <div
-        id="ytBgmDrawer"
-        class="max-w-6xl mx-auto mt-2 pt-2 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs"
+        class="max-w-6xl mx-auto mt-2 pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs"
       >
         <div class="flex flex-wrap items-center gap-2 text-amber-200/90">
           <span
             id="bgmStatusDot"
             class="w-2.5 h-2.5 rounded-full bg-amber-400"
+            aria-hidden="true"
           ></span>
-          <span
-            >🎶 指定背景 BGM：<a
-              href="https://youtu.be/VETYSUtX6PY?si=oPXKaLiA8_kHiYg3"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="underline hover:text-amber-300 font-semibold"
-              >魔導城プラエトリウム (YouTube: VETYSUtX6PY)</a
-            ></span
+          <span>🎶 背景音樂：天幕之下</span>
+          <button
+            id="btnToggleBgm"
+            type="button"
+            title="播放或暫停背景音樂"
+            class="px-2.5 py-1.5 rounded-md text-xs font-semibold bg-slate-900 border border-slate-700 text-slate-300 hover:border-amber-400/50 transition"
           >
+            🎶 BGM：選版本後播放
+          </button>
           <span
             id="bgmEngineStatus"
+            role="status"
             class="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700 text-[11px]"
+            >選擇語言版本後開始播放，可隨時暫停。</span
           >
-            手動開啟模式（請點擊右側播放器或上方 BGM 按鈕開啟）
-          </span>
-          <button
-            id="btnPopoutYt"
-            type="button"
-            class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-amber-200 border border-amber-500/40 text-[11px] transition"
-          >
-            🗗 獨立小視窗播放此曲
-          </button>
         </div>
-        <div class="flex items-center gap-2">
-          <div
-            class="w-72 h-16 rounded overflow-hidden border border-amber-500/40 bg-black shadow-inner relative"
+        <label class="flex items-center gap-2 text-slate-300" for="bgmVolume">
+          BGM 音量
+          <input
+            id="bgmVolume"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="50"
+            class="w-24 accent-amber-400"
+          />
+          <output
+            id="bgmVolumeValue"
+            for="bgmVolume"
+            class="w-9 text-right text-amber-200"
+            >50%</output
           >
-            <iframe
-              id="ytBgmIframe"
-              class="w-full h-full"
-              src="https://www.youtube.com/embed/VETYSUtX6PY?si=oPXKaLiA8_kHiYg3&autoplay=0&loop=1&playlist=VETYSUtX6PY&enablejsapi=1&playsinline=1&rel=0"
-              title="魔導城プラエトリウム (VETYSUtX6PY)"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allow="
-                accelerometer;
-                autoplay;
-                clipboard-write;
-                encrypted-media;
-                gyroscope;
-                picture-in-picture;
-                web-share;
-              "
-              allowfullscreen
-            ></iframe>
-          </div>
-        </div>
+        </label>
       </div>
     </header>
 
@@ -360,37 +336,6 @@
     <main
       class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col gap-5"
     >
-      <!-- Instant Autoplay Unmute / Duty Commence Banner (Hidden once language is chosen) -->
-      <div
-        id="dutyAutoplayBanner"
-        class="hidden ff-window rounded-xl p-3.5 sm:px-5 border-2 border-amber-400 bg-gradient-to-r from-amber-950/80 via-[#161924] to-red-950/70 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg"
-      >
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center shrink-0 animate-pulse"
-          >
-            <span class="text-lg">🔔</span>
-          </div>
-          <div>
-            <div
-              class="text-xs font-bold text-amber-300 tracking-wider uppercase"
-            >
-              DUTY FINDER • 任務搜尋器配對成功（シャキーン！）
-            </div>
-            <p class="text-xs sm:text-sm text-slate-200 mt-0.5">
-              點擊右側按鈕或選擇語言版本即可立即播放背景 BGM（VETYSUtX6PY）。
-            </p>
-          </div>
-        </div>
-        <button
-          id="btnCommenceDutyBgm"
-          type="button"
-          class="ff-btn-gold px-5 py-2.5 rounded-lg text-xs sm:text-sm font-black tracking-wide shrink-0 shadow-md"
-        >
-          ⚔️ 進入天幕魔導城（立即大聲播放 BGM）
-        </button>
-      </div>
-
       <!-- Hero Scene Banner + Live Cutscene Stage -->
       <section class="ff-window rounded-xl overflow-hidden relative">
         <div class="grid grid-cols-1 lg:grid-cols-12">

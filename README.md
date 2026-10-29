@@ -20,7 +20,7 @@ npm run build
 npm run preview
 ```
 
-`dist/` 是建置後可部署至靜態主機的內容。Google Fonts 與 YouTube BGM 仍需要網路；Tailwind CSS 已改為本機建置。
+`dist/` 是建置後可部署至靜態主機的內容。BGM 與圖片隨專案部署，Google Fonts 仍需要網路；Tailwind CSS 已改為本機建置。
 
 ## 結構
 
@@ -33,10 +33,17 @@ npm run preview
 - `src/game/app.ts`：遊戲控制、題目呈現與計分。
 - `src/ui/events.ts`：操作事件綁定。
 - `src/ui/dom.ts`：具型別與存在檢查的 DOM 存取。
-- `src/services/`：Web Audio 音效與 YouTube 播放控制。
+- `src/services/`：Web Audio 音效與本機 BGM 播放控制。
 - `src/styles/`：Tailwind 入口與黑金主題。
 - `public/images/`：從原始 HTML 抽出的圖片。
+- `public/audio/`：背景音樂檔案。
 
 原始 `ffxiv_praetorium_typing.html` 保留作為遷移對照，不是 Vite 程式入口。此次以模組化為主，既有計分與輔助作答規則維持原樣。
 
-`npm test` 使用模擬 DOM 驗證語言切換、打字換題、填空、模式切換及全文練習入口；不驗證真實瀏覽器的輸入法、音訊或 YouTube 播放。
+`npm test` 使用模擬 DOM 驗證語言切換、打字換題、填空、模式切換、全文練習入口及 BGM 控制；真實瀏覽器的輸入法和音訊解碼、播放需另行驗證。
+
+## 背景音樂
+
+第一次選擇語言版本後，會播放 `public/audio/BGM_ORCH_570-天幕之下.ogg.mp3`，預設以 50% 音量循環播放，可使用上方滑桿調整音量。切換題目或模式不會重新載入音樂；手動暫停後，切換語言也會保留暫停狀態，再次播放會接續原本位置。BGM 與打字音效分別控制。
+
+若瀏覽器阻擋有聲播放，或音檔載入失敗，頁面會顯示提示，可點擊 BGM 按鈕重試。音樂失敗不影響作答；已移除 YouTube 播放依賴。

@@ -14,12 +14,20 @@ import { state } from "../game/state";
 import { getLinePrimaryText } from "../game/text";
 import { PRAETORIUM_SCRIPT } from "../data/praetorium";
 import { soundFX } from "../services/audio";
-import { toggleBgm } from "../services/youtube";
+import {
+  initializeBgm,
+  setBgmVolume,
+  startBgmOnLanguageSelection,
+  toggleBgm,
+} from "../services/bgm";
 import { element } from "./dom";
 import type { Language, Act } from "../game/types";
 window.addEventListener("DOMContentLoaded", () => {
-  // Language selection handler: only selects language and starts session (BGM remains manual)
+  initializeBgm();
+
+  // Request music in the click handler; changing language later preserves playback.
   function chooseLanguageAndStart(langKey: Language) {
+    startBgmOnLanguageSelection();
     state.lang = langKey;
     const modal = element("langSelectModal");
     if (modal) modal.classList.add("hidden");
@@ -41,24 +49,12 @@ window.addEventListener("DOMContentLoaded", () => {
     element("langSelectModal").classList.remove("hidden");
   });
 
-  const popoutBtn = element("btnPopoutYt");
-  if (popoutBtn) {
-    popoutBtn.addEventListener("click", () => {
-      window.open(
-        "https://youtu.be/VETYSUtX6PY?si=oPXKaLiA8_kHiYg3",
-        "FFXIV_Praetorium_BGM",
-        "width=480,height=360,menubar=no,toolbar=no,location=no,status=no",
-      );
-    });
-  }
-
   element("btnToggleBgm").addEventListener("click", () => {
     toggleBgm();
   });
 
-  element("btnToggleYtPanel").addEventListener("click", () => {
-    const drawer = element("ytBgmDrawer");
-    drawer.classList.toggle("hidden");
+  element("bgmVolume").addEventListener("input", () => {
+    setBgmVolume(Number(element("bgmVolume").value) / 100);
   });
 
   // Mode navigation buttons

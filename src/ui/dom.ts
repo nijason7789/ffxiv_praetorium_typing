@@ -1,7 +1,8 @@
 type Elements = {
   typingInput: HTMLTextAreaElement;
   clozeInput: HTMLInputElement;
-  ytBgmIframe: HTMLIFrameElement;
+  bgmAudio: HTMLAudioElement;
+  bgmVolume: HTMLInputElement;
 };
 export function element<K extends string>(
   id: K,

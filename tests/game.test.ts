@@ -6,6 +6,17 @@ import { PRAETORIUM_SCRIPT } from "../src/data/praetorium";
 import { soundFX } from "../src/services/audio";
 import { element } from "../src/ui/dom";
 import { normalizeForCompare } from "../src/game/text";
+import {
+  initializeBgm,
+  startBgmOnLanguageSelection,
+} from "../src/services/bgm";
+
+vi.mock("../src/services/bgm", () => ({
+  initializeBgm: vi.fn(),
+  setBgmVolume: vi.fn(),
+  startBgmOnLanguageSelection: vi.fn(),
+  toggleBgm: vi.fn(),
+}));
 
 beforeAll(async () => {
   vi.useFakeTimers();
@@ -13,10 +24,10 @@ beforeAll(async () => {
   const html = readFileSync("index.html", "utf8");
   document.body.innerHTML = html
     .match(/<body[^>]*>([\s\S]*)<\/body>/)![1]
-    .replace(/<script[\s\S]*?<\/script>/g, "")
-    .replace(/<iframe\b[\s\S]*?<\/iframe>/g, '<div id="ytBgmIframe"></div>');
+    .replace(/<script[\s\S]*?<\/script>/g, "");
   await import("../src/ui/events");
   window.dispatchEvent(new Event("DOMContentLoaded"));
+  expect(initializeBgm).toHaveBeenCalledOnce();
 });
 
 afterAll(() => {
@@ -41,6 +52,7 @@ describe("modular game integration", () => {
         true,
       );
     }
+    expect(startBgmOnLanguageSelection).toHaveBeenCalledTimes(3);
   });
 
   it("completes a typed line and advances to the next line", () => {

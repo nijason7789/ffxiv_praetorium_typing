@@ -636,7 +636,3 @@ function fallbackCopy(text: string, callback: () => void) {
   document.body.removeChild(ta);
   if (callback) callback();
 }
-
-// =========================================================================
-// 8. EVENT LISTENERS, LANGUAGE MODAL & STRICT VETYSUtX6PY BGM CONTROLLER
-// =========================================================================
