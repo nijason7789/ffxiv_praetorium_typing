@@ -22,6 +22,29 @@ npm run preview
 
 `dist/` 是建置後可部署至靜態主機的內容。BGM 與圖片隨專案部署，Google Fonts 仍需要網路；Tailwind CSS 已改為本機建置。
 
+## GitHub Pages 部署
+
+Workflow 位於 `.github/workflows/deploy-pages.yml`，採用 GitHub 官方 Pages artifact 部署，不需要建立 `gh-pages` 分支或設定額外 token。
+
+首次設定：
+
+1. 在 repository 的 **Settings → Pages → Build and deployment → Source** 選擇 **GitHub Actions**。
+2. 將 workflow 推送至 `main`，便會自動部署；也可在 **Actions → Deploy to GitHub Pages → Run workflow** 手動執行，分支選 `main`。
+3. 部署完成後開啟 <https://nijason7789.github.io/ffxiv_praetorium_typing/>。
+
+每次推送 `main` 都會依序執行 `npm ci`、測試、型別檢查與正式建置，成功後才部署 `dist/`。部署狀態與實際網址可在 Actions 的 `github-pages` environment 查看。
+
+Workflow 會從 Pages 設定取得部署的 `base_path`，傳給 Vite `--base`，讓 JS、CSS、圖片及 BGM 都能在 `/ffxiv_praetorium_typing/` 下正確載入；本機開發仍使用原本根路徑。
+
+本機模擬目前的 Pages 部署路徑：
+
+```sh
+npm run build -- --base=/ffxiv_praetorium_typing/
+npm run preview -- --base=/ffxiv_praetorium_typing/
+```
+
+開啟 `http://localhost:4173/ffxiv_praetorium_typing/`。相關設定參考 [Vite GitHub Pages 部署文件](https://vite.dev/guide/static-deploy#github-pages) 與 [GitHub Pages workflow 文件](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
+
 ## 結構
 
 - `index.html`：頁面結構，保留現有樣式與元素 ID。
