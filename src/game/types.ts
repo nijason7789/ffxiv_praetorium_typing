@@ -1,5 +1,6 @@
 export type Language = "zh" | "jp" | "en";
 export type Mode = "typing" | "cloze" | "exam" | "script";
+export type Difficulty = "experience" | "challenge";
 export type Act = "act1" | "act2" | "act3" | "act4";
 export type Localized<T> = Record<Language, T>;
 export interface ScriptLine {
@@ -15,6 +16,7 @@ export interface ScriptLine {
 }
 export interface GameState {
   lang: Language;
+  difficulty: Difficulty;
   mode: Mode;
   actFilter: Act | "all";
   useAltTerm: boolean;

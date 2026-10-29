@@ -3,6 +3,7 @@ type Elements = {
   clozeInput: HTMLInputElement;
   bgmAudio: HTMLAudioElement;
   bgmVolume: HTMLInputElement;
+  btnAutoFillWord: HTMLButtonElement;
 };
 export function element<K extends string>(
   id: K,

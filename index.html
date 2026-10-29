@@ -21,10 +21,13 @@
     <!-- ========================================================= -->
     <div
       id="langSelectModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="languageSelectTitle"
       class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
     >
       <div
-        class="ff-window max-w-2xl w-full rounded-2xl p-6 sm:p-8 border-2 border-amber-400 shadow-2xl space-y-6 relative overflow-hidden"
+        class="ff-window max-w-2xl w-full max-h-[calc(100dvh-2rem)] rounded-2xl p-6 sm:p-8 border-2 border-amber-400 shadow-2xl space-y-6 relative overflow-y-auto"
       >
         <div
           class="flex items-center justify-between border-b border-amber-500/30 pb-4"
@@ -44,6 +47,7 @@
                 THE PRAETORIUM • 最終決戰 天幕魔導城
               </span>
               <h2
+                id="languageSelectTitle"
                 class="text-lg sm:text-2xl font-serif-tc font-black text-amber-100 mt-1"
               >
                 請選擇遊戲語言版本
@@ -175,6 +179,89 @@
       </div>
     </div>
 
+    <!-- Difficulty selection follows language selection. -->
+    <div
+      id="difficultySelectModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="difficultySelectTitle"
+      class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+    >
+      <div
+        class="ff-window max-w-2xl w-full max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl p-6 sm:p-8 border-2 border-amber-400 shadow-2xl space-y-6"
+      >
+        <div class="border-b border-amber-500/30 pb-4 space-y-2">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span class="text-slate-400">步驟 2 / 2</span>
+            <span
+              id="difficultyLanguageBadge"
+              class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-200 border border-amber-400/40"
+              >繁體中文</span
+            >
+          </div>
+          <h2
+            id="difficultySelectTitle"
+            class="text-xl sm:text-2xl font-serif-tc font-black text-amber-100"
+          >
+            選擇遊戲難度
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            想輕鬆跟上蓋老師的演講，還是靠自己的實力打完每一句？
+          </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button
+            id="btnSelectExperience"
+            type="button"
+            class="group text-left rounded-xl p-5 bg-slate-900/95 border-2 border-amber-500/60 hover:border-amber-300 hover:bg-amber-500/10 transition space-y-3"
+          >
+            <span class="block text-2xl">✨</span>
+            <span class="block text-xl font-serif-tc font-black text-amber-100"
+              >體驗</span
+            >
+            <span class="block text-sm text-slate-300 leading-relaxed"
+              >輕鬆熟悉台詞，卡住時可以使用魔導輔助填詞，也能點擊快速詞組輸入。</span
+            >
+            <span
+              class="block text-xs font-bold text-amber-300 pt-3 border-t border-slate-700"
+              >開始體驗 ▶</span
+            >
+          </button>
+          <button
+            id="btnSelectChallenge"
+            type="button"
+            class="group text-left rounded-xl p-5 bg-slate-900/95 border-2 border-red-500/50 hover:border-red-300 hover:bg-red-500/10 transition space-y-3"
+          >
+            <span class="block text-2xl">⚔️</span>
+            <span class="block text-xl font-serif-tc font-black text-red-200"
+              >挑戰</span
+            >
+            <span class="block text-sm text-slate-300 leading-relaxed"
+              >親手輸入每一句台詞。不提供魔導輔助填詞與快速詞組點擊輸入。</span
+            >
+            <span
+              class="block text-xs font-bold text-red-300 pt-3 border-t border-slate-700"
+              >接受挑戰 ▶</span
+            >
+          </button>
+        </div>
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-4"
+        >
+          <button
+            id="btnBackToLanguage"
+            type="button"
+            class="text-sm text-slate-300 hover:text-amber-200 transition"
+          >
+            ← 返回選擇語言
+          </button>
+          <p class="text-xs text-slate-400">
+            遊戲中可重新選擇難度，並重新開始。
+          </p>
+        </div>
+      </div>
+    </div>
+
     <!-- Top Navigation / Duty Finder Header -->
     <header
       class="sticky top-0 z-30 bg-[#0b0d14]/95 backdrop-blur-md border-b border-amber-500/30 px-3 sm:px-6 py-2.5"
@@ -252,6 +339,17 @@
           >
             🌐 語言：<span id="currentLangBadge" class="font-bold"
               >繁體中文</span
+            >
+          </button>
+
+          <button
+            id="btnOpenDifficultyModal"
+            type="button"
+            title="重新選擇難度並開始新一局"
+            class="px-2.5 py-1.5 rounded-md text-xs font-semibold bg-slate-900 border border-slate-700 text-slate-300 hover:border-amber-400/50"
+          >
+            ⚔️ 難度：<span id="currentDifficultyBadge" class="text-amber-300"
+              >體驗</span
             >
           </button>
 
@@ -700,7 +798,10 @@
               </div>
 
               <!-- Quick Phrase Assist Chips -->
-              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+              <div
+                id="typingAssistChips"
+                class="flex flex-wrap items-center gap-1.5 pt-1"
+              >
                 <span class="text-[11px] text-slate-400 mr-1"
                   >快速詞組點擊輸入：</span
                 >

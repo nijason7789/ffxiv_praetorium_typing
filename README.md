@@ -32,15 +32,22 @@ npm run preview
 - `src/game/text.ts`：文字正規化、語言取值與標點略過。
 - `src/game/app.ts`：遊戲控制、題目呈現與計分。
 - `src/ui/events.ts`：操作事件綁定。
+- `src/ui/setup.ts`：語言與難度選擇流程。
 - `src/ui/dom.ts`：具型別與存在檢查的 DOM 存取。
 - `src/services/`：Web Audio 音效與本機 BGM 播放控制。
 - `src/styles/`：Tailwind 入口與黑金主題。
 - `public/images/`：從原始 HTML 抽出的圖片。
 - `public/audio/`：背景音樂檔案。
 
-原始 `ffxiv_praetorium_typing.html` 保留作為遷移對照，不是 Vite 程式入口。此次以模組化為主，既有計分與輔助作答規則維持原樣。
+原始 `ffxiv_praetorium_typing.html` 保留作為遷移對照，不是 Vite 程式入口。
 
 `npm test` 使用模擬 DOM 驗證語言切換、打字換題、填空、模式切換、全文練習入口及 BGM 控制；真實瀏覽器的輸入法和音訊解碼、播放需另行驗證。
+
+## 遊戲難度
+
+進入流程為「選擇語言 → 選擇難度 → 開始遊戲」。體驗模式提供魔導輔助填詞與快速詞組點擊輸入；挑戰模式隱藏並停用這兩項打字輔助。填空選項、提示、標點略過及計分規則維持原樣。
+
+遊戲上方會顯示目前難度，可重新選擇；重新選擇難度會開始新一局。換題、切換模式與重新開始會保留目前難度。
 
 ## 背景音樂
 

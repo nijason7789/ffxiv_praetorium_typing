@@ -14,40 +14,13 @@ import { state } from "../game/state";
 import { getLinePrimaryText } from "../game/text";
 import { PRAETORIUM_SCRIPT } from "../data/praetorium";
 import { soundFX } from "../services/audio";
-import {
-  initializeBgm,
-  setBgmVolume,
-  startBgmOnLanguageSelection,
-  toggleBgm,
-} from "../services/bgm";
+import { initializeBgm, setBgmVolume, toggleBgm } from "../services/bgm";
 import { element } from "./dom";
-import type { Language, Act } from "../game/types";
+import type { Act } from "../game/types";
+import { initializeSetup } from "./setup";
 window.addEventListener("DOMContentLoaded", () => {
   initializeBgm();
-
-  // Request music in the click handler; changing language later preserves playback.
-  function chooseLanguageAndStart(langKey: Language) {
-    startBgmOnLanguageSelection();
-    state.lang = langKey;
-    const modal = element("langSelectModal");
-    if (modal) modal.classList.add("hidden");
-    soundFX.playLineComplete();
-    startNewSession();
-  }
-
-  element("btnSelectLangZh").addEventListener("click", () =>
-    chooseLanguageAndStart("zh"),
-  );
-  element("btnSelectLangJp").addEventListener("click", () =>
-    chooseLanguageAndStart("jp"),
-  );
-  element("btnSelectLangEn").addEventListener("click", () =>
-    chooseLanguageAndStart("en"),
-  );
-
-  element("btnOpenLangModal").addEventListener("click", () => {
-    element("langSelectModal").classList.remove("hidden");
-  });
+  initializeSetup();
 
   element("btnToggleBgm").addEventListener("click", () => {
     toggleBgm();
@@ -161,6 +134,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Auto-fill next characters helper button
   element("btnAutoFillWord").addEventListener("click", () => {
+    if (state.difficulty !== "experience") return;
     const item = state.queue[state.currentIndex];
     if (!item) return;
     const targetText = getLinePrimaryText(item);

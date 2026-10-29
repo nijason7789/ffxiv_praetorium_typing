@@ -12,6 +12,22 @@ import {
 } from "./text";
 import { element } from "../ui/dom";
 import type { ScriptLine, Language, Mode, Act } from "./types";
+let advanceTimer: ReturnType<typeof setTimeout> | undefined;
+
+function cancelPendingAdvance() {
+  clearTimeout(advanceTimer);
+  advanceTimer = undefined;
+}
+
+function focusGameInput(input: HTMLElement) {
+  setTimeout(() => {
+    if (
+      element("langSelectModal").classList.contains("hidden") &&
+      element("difficultySelectModal").classList.contains("hidden")
+    )
+      input.focus();
+  }, 30);
+}
 function getFilteredQueue() {
   if (state.actFilter === "all") {
     return [...PRAETORIUM_SCRIPT];
@@ -74,6 +90,7 @@ function updateLangUI() {
 }
 
 export function startNewSession() {
+  cancelPendingAdvance();
   state.queue = getFilteredQueue();
   state.currentIndex = 0;
   state.startTime = null;
@@ -202,6 +219,7 @@ function renderSubtitlesForLanguage(item: ScriptLine) {
 }
 
 export function renderCurrentStep() {
+  cancelPendingAdvance();
   if (!state.queue.length) return;
   if (state.currentIndex >= state.queue.length) {
     finishStage();
@@ -276,12 +294,16 @@ export function renderCurrentStep() {
 // 5. STANDARD TYPING MODE LOGIC
 // =========================================================================
 function renderStandardTypingStep(item: ScriptLine, targetText: string) {
+  const assistsEnabled = state.difficulty === "experience";
+  element("btnAutoFillWord").classList.toggle("hidden", !assistsEnabled);
+  element("btnAutoFillWord").disabled = !assistsEnabled;
+  element("typingAssistChips").classList.toggle("hidden", !assistsEnabled);
   const inputEl = element("typingInput");
   inputEl.value = "";
   state.lastMatchedLen = 0;
   renderTargetCharacters("", targetText);
   renderQuickPhraseChips(targetText);
-  setTimeout(() => inputEl.focus(), 30);
+  focusGameInput(inputEl);
 }
 
 function renderTargetCharacters(rawInput: string, targetText: string) {
@@ -326,6 +348,7 @@ function renderTargetCharacters(rawInput: string, targetText: string) {
 function renderQuickPhraseChips(targetText: string) {
   const container = element("quickPhraseChips");
   container.innerHTML = "";
+  if (state.difficulty !== "experience") return;
   let segments = [];
   if (state.lang === "en") {
     // Split English sentence into 3-4 word chunks
@@ -346,6 +369,7 @@ function renderQuickPhraseChips(targetText: string) {
       "px-2.5 py-1 rounded bg-slate-800/90 hover:bg-amber-500/20 text-xs text-slate-200 border border-slate-700 hover:border-amber-400/50 transition";
     btn.textContent = seg.trim();
     btn.addEventListener("click", () => {
+      if (state.difficulty !== "experience") return;
       const inputEl = element("typingInput");
       if (!state.startTime) state.startTime = Date.now();
       inputEl.value += seg;
@@ -357,6 +381,7 @@ function renderQuickPhraseChips(targetText: string) {
 }
 
 export function handleTypingProgress() {
+  if (advanceTimer !== undefined) return;
   if (state.isComposing) return;
   const item = state.queue[state.currentIndex];
   if (!item) return;
@@ -413,7 +438,7 @@ export function handleTypingProgress() {
   if (allMatched) {
     soundFX.playLineComplete();
     state.score += 100;
-    setTimeout(() => {
+    advanceTimer = setTimeout(() => {
       state.currentIndex++;
       renderCurrentStep();
     }, 180);
@@ -424,6 +449,7 @@ export function handleTypingProgress() {
 // 6. MULTI-VARIANT RANDOMIZED CLOZE MODE LOGIC
 // =========================================================================
 export function renderClozeStep(item: ScriptLine, primarySentence: string) {
+  cancelPendingAdvance();
   state.clozeAnswered = false;
   const { chosenBlank, options, poolCount } = pickRandomClozeQuestion(item);
 
@@ -460,7 +486,7 @@ export function renderClozeStep(item: ScriptLine, primarySentence: string) {
     gridEl.appendChild(btn);
   });
 
-  setTimeout(() => clozeInput.focus(), 30);
+  focusGameInput(clozeInput);
 }
 
 export function verifyClozeAnswer(userAnswerRaw: string) {
@@ -498,7 +524,7 @@ export function verifyClozeAnswer(userAnswerRaw: string) {
     soundFX.playLineComplete();
     updateStatsUI();
 
-    setTimeout(() => {
+    advanceTimer = setTimeout(() => {
       state.currentIndex++;
       renderCurrentStep();
     }, 650);
