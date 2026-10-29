@@ -109,7 +109,7 @@ export function toggleBgm() {
 }
 
 export function setBgmVolume(value: number) {
-  const volume = Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0.5;
+  const volume = Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0.25;
   element("bgmAudio").volume = volume;
   element("bgmVolume").value = String(Math.round(volume * 100));
   element("bgmVolumeValue").textContent = `${Math.round(volume * 100)}%`;

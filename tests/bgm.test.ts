@@ -38,13 +38,13 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-it("prepares the supplied local track with looping and 50% volume without autoplay", () => {
+it("prepares the supplied local track with looping and 25% volume without autoplay", () => {
   bgm.initializeBgm();
   expect(audio.getAttribute("src")).toBe(
     "/audio/BGM_ORCH_570-天幕之下.ogg.mp3",
   );
   expect(audio.loop).toBe(true);
-  expect(audio.volume).toBe(0.5);
+  expect(audio.volume).toBe(0.25);
   expect(audio.play).not.toHaveBeenCalled();
 });
 
