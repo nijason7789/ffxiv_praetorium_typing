@@ -35,6 +35,5 @@ export interface GameState {
   lastMatchedLen: number;
   clozeAnswered: boolean;
   activeClozeBlank: string;
-  lastBlankByLine: Record<string, string>;
   rpgAnsweredForLine: Record<string, boolean>;
 }

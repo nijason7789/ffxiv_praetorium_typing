@@ -193,4 +193,29 @@ describe("modular game integration", () => {
     expect(state.score).toBe(0);
     expect(element("btnAutoFillWord").disabled).toBe(true);
   });
+
+  it("rerolls to another real blank and clears the previous input", () => {
+    element("navModeCloze").click();
+    let previous = state.activeClozeBlank;
+    for (let i = 0; i < 8; i++) {
+      element("clozeInput").value = "舊答案";
+      element("btnRerollCloze").click();
+      expect(state.activeClozeBlank).not.toBe(previous);
+      expect(getLinePrimaryText(state.queue[state.currentIndex])).toContain(
+        state.activeClozeBlank,
+      );
+      expect(element("clozeInput").value).toBe("");
+      expect(element("clozeSlotVisual").textContent).toContain("＿＿＿");
+      const options = [
+        ...element("clozeOptionsGrid").querySelectorAll("button"),
+      ];
+      expect(options).toHaveLength(4);
+      expect(
+        options.filter((option) =>
+          option.textContent?.includes(state.activeClozeBlank),
+        ),
+      ).toHaveLength(1);
+      previous = state.activeClozeBlank;
+    }
+  });
 });

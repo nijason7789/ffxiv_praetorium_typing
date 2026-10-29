@@ -20,6 +20,5 @@ export const state: GameState = {
   lastMatchedLen: 0,
   clozeAnswered: false,
   activeClozeBlank: "",
-  lastBlankByLine: {}, // Tracks last selected blank per line ID to guarantee variety
   rpgAnsweredForLine: {},
 };

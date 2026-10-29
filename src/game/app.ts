@@ -1,5 +1,7 @@
 import { PRAETORIUM_SCRIPT, DISTRACTOR_POOL } from "../data/praetorium";
 import { soundFX } from "../services/audio";
+import { nextClozeBlank } from "../services/cloze-history";
+import { shuffle } from "./random";
 import { state } from "./state";
 import {
   PUNCT_SET,
@@ -42,23 +44,16 @@ function isCurrentStepCloze() {
 }
 
 // Pick a random blank word from the item's clozePool for the current language
-function pickRandomClozeQuestion(item: ScriptLine, forceDifferent = false) {
+function pickRandomClozeQuestion(item: ScriptLine) {
   const pool =
     (item.clozePool && item.clozePool[state.lang]) || item.clozePool.zh;
-  const localizedPool = pool.map((w) =>
-    state.lang === "zh" ? localizeZhTerm(w) : w,
+  const sentence = getLinePrimaryText(item);
+  const validPool = [...new Set(pool)].filter((word) =>
+    sentence.includes(state.lang === "zh" ? localizeZhTerm(word) : word),
   );
-  const prevKey = `${item.id}_${state.lang}`;
-  const prevBlank = state.lastBlankByLine[prevKey];
-
-  let candidates = localizedPool;
-  if (localizedPool.length > 1 && prevBlank) {
-    const filtered = localizedPool.filter((w) => w !== prevBlank);
-    if (filtered.length > 0) candidates = filtered;
-  }
-
-  const chosenBlank = candidates[Math.floor(Math.random() * candidates.length)];
-  state.lastBlankByLine[prevKey] = chosenBlank;
+  const canonicalBlank = nextClozeBlank(item.id, state.lang, validPool);
+  const chosenBlank =
+    state.lang === "zh" ? localizeZhTerm(canonicalBlank) : canonicalBlank;
   state.activeClozeBlank = chosenBlank;
 
   // Build 3 randomized distractors from same-language distractor pool + other pool words
@@ -67,14 +62,10 @@ function pickRandomClozeQuestion(item: ScriptLine, forceDifferent = false) {
     .filter((w) => normalizeForCompare(w) !== normalizeForCompare(chosenBlank));
 
   // Shuffle distractors and pick 3
-  const shuffledDist = [...langDistractors]
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
-  const options = [chosenBlank, ...shuffledDist].sort(
-    () => Math.random() - 0.5,
-  );
+  const shuffledDist = shuffle([...new Set(langDistractors)]).slice(0, 3);
+  const options = shuffle([chosenBlank, ...shuffledDist]);
 
-  return { chosenBlank, options, poolCount: localizedPool.length };
+  return { chosenBlank, options, poolCount: validPool.length };
 }
 
 // Auto-advance past punctuation in target string if skipPunct is enabled
