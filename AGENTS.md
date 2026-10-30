@@ -31,6 +31,7 @@
 - `tests/statistics.test.ts`、`tests/session.integration.test.ts`：計時／評級規則，以及閱讀、單句練習、完成率與結算鎖定的整合情境。
 - `tests/ime.integration.test.ts`：選字 Enter、事件順序、長按、空白答案與換題重設的 BDD 情境；模擬事件不取代作業系統輸入法驗收。
 - `tests/clipboard.integration.test.ts`：複製成功、備援、最終失敗、焦點還原及提示競態的 BDD 情境。
+- `tests/audio.test.ts`、`tests/audio.integration.test.ts`：音效初始化／恢復／節點失敗，以及不中斷遊戲或 BGM 的 BDD 情境。
 
 ## 行為與實作原則
 
@@ -42,6 +43,7 @@
 - 維持 TypeScript strict；優先補正確的型別，避免以 `any` 或停用檢查掩蓋問題。
 - 題目和使用者輸入優先透過 `textContent` 呈現；若必須產生 HTML，避免直接插入未受信任內容。
 - 保留素材版權標示。音效與 BGM 的載入或播放失敗不應阻止作答。
+- 音效恢復尚未完成時略過音符，不累積延後播放；音符結束或建立失敗時安全中斷節點連線，清理失敗也不能向遊戲拋錯。
 - 不直接編輯 `dist/`、`node_modules/` 或 `.npm-cache/`；依賴異動需同步更新 `package-lock.json`。
 
 ## 開發與驗證
