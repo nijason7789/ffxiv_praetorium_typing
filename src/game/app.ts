@@ -18,10 +18,33 @@ import {
   getLineSpeaker,
   getLineActTitle,
   computeEffectiveInput,
+  computeEffectiveInputWithSources,
 } from "./text";
+import { reconcileInputSources, type InputSource } from "./input-source";
+import {
+  calculateStats,
+  createTypingClock,
+  startTypingClock,
+  pauseTypingClock,
+} from "./statistics";
 import { element } from "../ui/dom";
 import type { ScriptLine, Language, Mode, Act } from "./types";
 let advanceTimer: ReturnType<typeof setTimeout> | undefined;
+let activeTimingQuestion = "";
+let resumeAfterArchive = false;
+let archiveNeedsRender = false;
+
+function pauseClock() {
+  state.typingClock = pauseTypingClock(state.typingClock, Date.now());
+}
+
+function isSessionLocked() {
+  return state.result !== null || state.sessionError;
+}
+
+function canAnswer() {
+  return !isSessionLocked() && state.mode !== "script";
+}
 
 function questionKey(item: ScriptLine) {
   return `${state.lang}:${item.id}`;
@@ -54,14 +77,90 @@ function isCurrentStepCloze() {
   return state.currentIndex % 2 === 1;
 }
 
+function validClozeWords(item: ScriptLine) {
+  const pool = item.clozePool?.[state.lang] ?? item.clozePool?.zh ?? [];
+  const sentence = getLinePrimaryText(item);
+  return [...new Set(pool)].filter(
+    (word) =>
+      word.length > 0 &&
+      sentence.includes(state.lang === "zh" ? localizeZhTerm(word) : word),
+  );
+}
+
+function validQuestionIds() {
+  return state.queue.flatMap((item, index) => {
+    const cloze =
+      state.sessionMode === "cloze" ||
+      (state.sessionMode === "exam" && index % 2 === 1);
+    return getLinePrimaryText(item).length > 0 &&
+      (!cloze || validClozeWords(item).length > 0)
+      ? [questionKey(item)]
+      : [];
+  });
+}
+
+function currentStats() {
+  return (
+    state.result ??
+    calculateStats(
+      state,
+      state.typingClock,
+      validQuestionIds(),
+      state.sessionMode === "cloze",
+      Date.now(),
+    )
+  );
+}
+
+function showNoQuestions() {
+  pauseClock();
+  state.sessionError = true;
+  element("sessionNotice").textContent = "沒有可用題目，請重新整理頁面後再試。";
+  element("sessionNotice").classList.remove("hidden");
+  element("sessionNoticeBox").classList.remove("hidden");
+  element("sessionReload").classList.remove("hidden");
+  element("stageCompleteModal").classList.add("hidden");
+  element("typingInput").disabled = true;
+  element("clozeInput").disabled = true;
+  updateStatsUI();
+}
+
+export function selectMode(mode: Mode) {
+  if (mode === "script") {
+    if (state.mode === "script") return;
+    resumeAfterArchive = state.typingClock.startedAt !== null && canAnswer();
+    pauseClock();
+    archiveNeedsRender = advanceTimer !== undefined;
+    if (archiveNeedsRender) {
+      cancelPendingAdvance();
+      state.currentIndex++;
+    }
+    state.mode = mode;
+    updateNavigationTabs();
+    return;
+  }
+  const returning = state.mode === "script" && mode === state.sessionMode;
+  state.mode = mode;
+  updateNavigationTabs();
+  if (returning) {
+    if (archiveNeedsRender) renderCurrentStep();
+    else {
+      if (resumeAfterArchive && canAnswer())
+        state.typingClock = startTypingClock(state.typingClock, Date.now());
+      updateStatsUI();
+      if (canAnswer())
+        focusGameInput(
+          isCurrentStepCloze() ? element("clozeInput") : element("typingInput"),
+        );
+    }
+    resumeAfterArchive = false;
+    archiveNeedsRender = false;
+  } else startNewSession();
+}
+
 // Pick a random blank word from the item's clozePool for the current language
 function pickRandomClozeQuestion(item: ScriptLine) {
-  const pool =
-    (item.clozePool && item.clozePool[state.lang]) || item.clozePool.zh;
-  const sentence = getLinePrimaryText(item);
-  const validPool = [...new Set(pool)].filter((word) =>
-    sentence.includes(state.lang === "zh" ? localizeZhTerm(word) : word),
-  );
+  const validPool = validClozeWords(item);
   const canonicalBlank = nextClozeBlank(item.id, state.lang, validPool);
   const chosenBlank =
     state.lang === "zh" ? localizeZhTerm(canonicalBlank) : canonicalBlank;
@@ -91,15 +190,30 @@ function updateLangUI() {
   }
 }
 
-export function startNewSession() {
+export function startNewSession(questions?: ScriptLine[]) {
   cancelPendingAdvance();
-  state.queue = getFilteredQueue();
+  if (state.mode === "script") state.mode = state.sessionMode;
+  state.sessionMode = state.mode;
+  state.queue = questions ?? getFilteredQueue();
   state.currentIndex = 0;
-  state.startTime = null;
+  state.typingClock = createTypingClock();
+  state.result = null;
+  state.sessionError = false;
+  activeTimingQuestion = "";
+  resumeAfterArchive = false;
+  archiveNeedsRender = false;
   Object.assign(state, createScoringState());
   state.clozeAnswered = false;
+  state.isComposing = false;
+  element("imeStatusBadge").classList.add("hidden");
+  element("typingInput").disabled = false;
+  element("clozeInput").disabled = false;
+  element("sessionNotice").classList.add("hidden");
+  element("sessionNoticeBox").classList.add("hidden");
+  element("sessionReload").classList.add("hidden");
 
   element("stageCompleteModal").classList.add("hidden");
+  updateNavigationTabs();
   updateLangUI();
   updateStatsUI();
   renderCurrentStep();
@@ -149,37 +263,26 @@ export function updateActButtons() {
 }
 
 function updateStatsUI() {
-  let cpm = 0;
-  if (state.startTime && state.correctChars > 0) {
-    const elapsedMinutes = Math.max(
-      (Date.now() - state.startTime) / 60000,
-      0.05,
-    );
-    cpm = Math.round(state.correctChars / elapsedMinutes);
-  }
-  const totalAttempts = state.correctChars + state.errorCount;
-  const acc =
-    totalAttempts > 0
-      ? Math.max(0, Math.round((state.correctChars / totalAttempts) * 100))
-      : 100;
+  const stats = currentStats();
   const multiplier = (1 + Math.floor(state.combo / 10) * 0.2).toFixed(1);
 
-  element("statCpm").textContent = String(cpm);
-  element("statAcc").textContent = String(acc);
+  element("statCpm").textContent =
+    stats.cpm === null ? "不適用" : String(stats.cpm);
+  element("statCpmUnit").classList.toggle("hidden", stats.cpm === null);
+  element("statAcc").textContent =
+    stats.accuracy === null ? "無資料" : String(stats.accuracy);
+  element("statAccUnit").classList.toggle("hidden", stats.accuracy === null);
   element("statCombo").textContent = String(state.combo);
   element("statEchoTier").textContent = `超越之力 x${multiplier}`;
   element("statScore").textContent = state.score.toLocaleString();
 
   const totalSteps = Math.max(state.queue.length, 1);
-  const pct = Math.min(
-    100,
-    Math.round((state.currentIndex / totalSteps) * 100),
-  );
-  const displayPct = Math.max(8, pct);
+  const pct = stats.completionRate;
   element("stageStepCounter").textContent =
     `(${Math.min(state.currentIndex + 1, totalSteps)} / ${totalSteps})`;
-  element("ultimaChargeText").textContent = `究極神兵共鳴率：${pct}%`;
-  element("stageProgressBar").style.width = `${displayPct}%`;
+  element("ultimaChargeText").textContent =
+    `究極神兵共鳴率：${pct}%（${stats.completed} / ${stats.total} 題）`;
+  element("stageProgressBar").style.width = `${pct}%`;
 }
 
 function renderSubtitlesForLanguage(item: ScriptLine) {
@@ -215,7 +318,26 @@ function renderSubtitlesForLanguage(item: ScriptLine) {
 
 export function renderCurrentStep() {
   cancelPendingAdvance();
-  if (!state.queue.length) return;
+  if (isSessionLocked() || state.mode === "script") return;
+  if (!validQuestionIds().length) {
+    showNoQuestions();
+    return;
+  }
+  const valid = new Set(validQuestionIds());
+  let skipped = false;
+  while (
+    state.currentIndex < state.queue.length &&
+    !valid.has(questionKey(state.queue[state.currentIndex]))
+  ) {
+    state.currentIndex++;
+    skipped = true;
+  }
+  if (skipped) {
+    element("sessionNotice").textContent =
+      "已略過無法作答的題目，不扣分、不計錯。";
+    element("sessionNotice").classList.remove("hidden");
+    element("sessionNoticeBox").classList.remove("hidden");
+  }
   if (state.currentIndex >= state.queue.length) {
     finishStage();
     return;
@@ -223,6 +345,9 @@ export function renderCurrentStep() {
 
   const item = state.queue[state.currentIndex];
   const primarySentence = getLinePrimaryText(item);
+  const timingKey = `${state.currentIndex}:${questionKey(item)}`;
+  if (isCurrentStepCloze() || timingKey !== activeTimingQuestion) pauseClock();
+  activeTimingQuestion = timingKey;
 
   // Speaker & Context Header
   element("speakerBadge").textContent = getLineSpeaker(item);
@@ -256,6 +381,7 @@ export function renderCurrentStep() {
         state.lang === "zh" ? localizeZhTerm(chLabel) : chLabel;
       btn.innerHTML = `<span>▶ ${displayLabel}</span><span class="text-[11px] text-amber-300/80">+150 pts</span>`;
       btn.addEventListener("click", () => {
+        if (!canAnswer() || state.queue[state.currentIndex] !== item) return;
         const next = scoreRpg(state, scoreKey);
         if (next === state) return;
         Object.assign(state, next);
@@ -365,30 +491,42 @@ function renderQuickPhraseChips(targetText: string) {
       "px-2.5 py-1 rounded bg-slate-800/90 hover:bg-amber-500/20 text-xs text-slate-200 border border-slate-700 hover:border-amber-400/50 transition";
     btn.textContent = seg.trim();
     btn.addEventListener("click", () => {
-      if (state.difficulty !== "experience") return;
+      if (state.difficulty !== "experience" || !canAnswer()) return;
       const inputEl = element("typingInput");
-      if (!state.startTime) state.startTime = Date.now();
       inputEl.value += seg;
-      handleTypingProgress();
+      handleTypingProgress("assist");
       inputEl.focus();
     });
     container.appendChild(btn);
   });
 }
 
-export function handleTypingProgress() {
+export function handleTypingProgress(source: InputSource = "manual") {
+  if (!canAnswer() || isCurrentStepCloze()) return;
   if (advanceTimer !== undefined) return;
   if (state.isComposing) return;
+  if (source === "assist" && state.difficulty !== "experience") return;
   const item = state.queue[state.currentIndex];
   if (!item) return;
 
   const targetText = getLinePrimaryText(item);
   const inputEl = element("typingInput");
   const rawVal = inputEl.value;
+  const previous = state.scoreProgress[questionKey(item)];
+  const rawSources = reconcileInputSources(
+    previous?.previousInput ?? "",
+    previous?.inputSources ?? [],
+    normalizeForCompare(rawVal),
+    source,
+  );
+  const effective = computeEffectiveInputWithSources(
+    rawVal,
+    targetText,
+    rawSources,
+  );
 
-  if (!state.startTime && rawVal.length > 0) {
-    state.startTime = Date.now();
-  }
+  if (source === "manual" && rawVal.length > 0)
+    state.typingClock = startTypingClock(state.typingClock, Date.now());
 
   const { allMatched, effectiveInput, normInput, normTarget } =
     renderTargetCharacters(rawVal, targetText);
@@ -409,6 +547,8 @@ export function handleTypingProgress() {
       questionId: questionKey(item),
       input: normInput,
       target: normTarget,
+      source,
+      inputSources: effective.sources,
     }),
   );
   if (state.errorCount > previousErrors) {
@@ -420,6 +560,7 @@ export function handleTypingProgress() {
   updateStatsUI();
 
   if (allMatched) {
+    pauseClock();
     soundFX.playLineComplete();
     advanceTimer = setTimeout(() => {
       state.currentIndex++;
@@ -432,7 +573,9 @@ export function handleTypingProgress() {
 // 6. MULTI-VARIANT RANDOMIZED CLOZE MODE LOGIC
 // =========================================================================
 export function renderClozeStep(item: ScriptLine, primarySentence: string) {
+  if (!canAnswer()) return;
   cancelPendingAdvance();
+  pauseClock();
   state.clozeAnswered = false;
   const { chosenBlank, options, poolCount } = pickRandomClozeQuestion(item);
 
@@ -473,11 +616,10 @@ export function renderClozeStep(item: ScriptLine, primarySentence: string) {
 }
 
 export function verifyClozeAnswer(userAnswerRaw: string) {
+  if (!canAnswer() || !isCurrentStepCloze()) return;
   if (state.clozeAnswered) return;
   const item = state.queue[state.currentIndex];
   if (!item) return;
-
-  if (!state.startTime) state.startTime = Date.now();
 
   const expected = state.activeClozeBlank;
   const userClean = (userAnswerRaw || element("clozeInput").value).trim();
@@ -542,35 +684,50 @@ export function verifyClozeAnswer(userAnswerRaw: string) {
 // 7. STAGE COMPLETION & ARCHIVE VIEW
 // =========================================================================
 export function finishStage() {
+  if (isSessionLocked()) return;
+  cancelPendingAdvance();
+  pauseClock();
+  const stats = currentStats();
+  if (!stats.total) {
+    showNoQuestions();
+    return;
+  }
+  state.result = Object.freeze({
+    ...stats,
+    score: state.score,
+    maxCombo: state.maxCombo,
+    difficulty: state.difficulty,
+    hasUsedAssistance: state.hasUsedAssistance,
+  });
+  element("typingInput").disabled = true;
+  element("clozeInput").disabled = true;
+  element("btnAutoFillWord").disabled = true;
+  updateStatsUI();
   soundFX.playDutyComplete();
   const modal = element("stageCompleteModal");
   modal.classList.remove("hidden");
 
-  let cpm = 0;
-  if (state.startTime && state.correctChars > 0) {
-    const elapsedMinutes = Math.max(
-      (Date.now() - state.startTime) / 60000,
-      0.05,
-    );
-    cpm = Math.round(state.correctChars / elapsedMinutes);
-  }
-  const totalAttempts = state.correctChars + state.errorCount;
-  const acc =
-    totalAttempts > 0
-      ? Math.max(0, Math.round((state.correctChars / totalAttempts) * 100))
-      : 100;
-
   element("finalScoreVal").textContent = state.score.toLocaleString();
-  element("finalCpmVal").textContent = `${cpm} 字/分`;
-  element("finalAccVal").textContent = `${acc}%`;
+  element("finalCpmVal").textContent =
+    stats.cpm === null ? "不適用" : `${stats.cpm} 字/分`;
+  element("finalAccVal").textContent =
+    stats.accuracy === null ? "無資料" : `${stats.accuracy}%`;
+  element("finalCompletionVal").textContent =
+    `${stats.completed} / ${stats.total} 題（${stats.completionRate}%）`;
   element("finalMaxComboVal").textContent = String(state.maxCombo);
+  const difficulty = state.difficulty === "experience" ? "體驗" : "挑戰";
+  element("finalAssistanceStatus").textContent =
+    `${difficulty}模式・${state.hasUsedAssistance ? "已使用輔助" : "未使用輔助"}`;
 
   let rankTitle = "S+ 級：天命之統治者・蓋老師親傳首席";
   let rankQuote = "「實在太精彩了，冒險者。你對天幕魔導城演講已經倒背如流！」";
-  if (acc < 80) {
+  if (stats.rank === null) {
+    rankTitle = "無資料";
+    rankQuote = "本局尚無可統計的作答資料，請重新開始練習。";
+  } else if (stats.rank === "B") {
     rankTitle = "B 級：魔導城留堂補課生";
     rankQuote = "「這樣，真是遺憾……看來明天的主線隨機你還得再聽我講一次！」";
-  } else if (acc < 93) {
+  } else if (stats.rank === "A") {
     rankTitle = "A 級：第XIV軍團榮譽幕僚";
     rankQuote = "「哼……竟然會有如此實力。距離領悟真正的力量只差一步了！」";
   }
@@ -621,11 +778,9 @@ export function renderScriptArchive() {
         const idx = parseInt(btn.getAttribute("data-jump-idx")!, 10);
         state.mode = targetMode as Mode;
         state.actFilter = "all";
-        state.queue = [...PRAETORIUM_SCRIPT];
-        state.currentIndex = idx;
         updateNavigationTabs();
         updateActButtons();
-        renderCurrentStep();
+        startNewSession([PRAETORIUM_SCRIPT[idx]]);
       });
     });
 }

@@ -1,5 +1,6 @@
 import type { GameState } from "./types";
 import { createScoringState } from "./scoring";
+import { createTypingClock } from "./statistics";
 export const state: GameState = {
   lang: "zh", // 'zh' | 'jp' | 'en'
   difficulty: "experience",
@@ -11,7 +12,10 @@ export const state: GameState = {
   queue: [],
   currentIndex: 0,
   isComposing: false,
-  startTime: null,
+  sessionMode: "typing",
+  typingClock: createTypingClock(),
+  result: null,
+  sessionError: false,
   ...createScoringState(),
   clozeAnswered: false,
   activeClozeBlank: "",

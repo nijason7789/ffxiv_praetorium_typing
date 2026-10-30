@@ -6,6 +6,32 @@ import type { GameState, ScriptLine } from "../src/game/types";
 let state: GameState;
 let game: typeof import("../src/game/app");
 
+vi.mock("../src/services/bgm", () => ({
+  initializeBgm: vi.fn(),
+  setBgmVolume: vi.fn(),
+  startBgmOnLanguageSelection: vi.fn(),
+  toggleBgm: vi.fn(),
+}));
+
+async function bindEvents() {
+  // Run this fixture's initializer without leaving listeners on the shared window.
+  let initialize = () => {};
+  const listenerSpy = vi
+    .spyOn(window, "addEventListener")
+    .mockImplementation((type, listener) => {
+      if (type === "DOMContentLoaded" && typeof listener === "function")
+        initialize = () => listener.call(window, new Event(type));
+    });
+  await import("../src/ui/events");
+  listenerSpy.mockRestore();
+  initialize();
+  state.queue = [
+    question("first", "ABCDEFGHIJKL"),
+    question("second", "SECOND"),
+  ];
+  game.renderCurrentStep();
+}
+
 function question(id: string, text: string): ScriptLine {
   return {
     id,
@@ -50,6 +76,141 @@ afterEach(() => {
 });
 
 describe("Feature: 計分規則接回遊戲 [DEC-03, SCORE]", () => {
+  it.each(["zh", "jp"] as const)(
+    "[Q26] Given %s 版, When 略過標點與空白完成, Then 只計手打字元",
+    (lang) => {
+      state.lang = lang;
+      state.queue[0] = question("localized", "甲， 乙。");
+      state.skipPunct = true;
+      game.renderCurrentStep();
+      type("甲乙");
+      expect(state.score).toBe(150);
+      expect(state.combo).toBe(2);
+      expect(state.correctChars).toBe(2);
+      expect(state.hasUsedAssistance).toBe(false);
+    },
+  );
+  it("[ASSIST-04, Q19] When 點補字再手動完成, Then 只有後兩字納入字速與精準度", async () => {
+    await bindEvents();
+    document.querySelector<HTMLButtonElement>("#btnAutoFillWord")!.click();
+    expect(state.hasUsedAssistance).toBe(true);
+    expect(state.correctChars).toBe(0);
+    expect(document.querySelector("#statCpm")!.textContent).toBe("0");
+    type("ABCDEFGHIJKL");
+    expect(state.correctChars).toBe(2);
+    expect(state.totalTypedChars).toBe(2);
+    expect(state.score).toBe(415);
+    expect(document.querySelector("#statCpm")!.textContent).toBe("40");
+  });
+
+  it("[ASSIST-02] Given 挑戰模式, When 觸發補字操作, Then 不填入文字或標示輔助", async () => {
+    await bindEvents();
+    state.difficulty = "challenge";
+    game.renderCurrentStep();
+    document
+      .querySelector<HTMLButtonElement>("#btnAutoFillWord")!
+      .dispatchEvent(new Event("click"));
+    expect(
+      document.querySelector<HTMLTextAreaElement>("#typingInput")!.value,
+    ).toBe("");
+    expect(state.hasUsedAssistance).toBe(false);
+    game.finishStage();
+    expect(document.querySelector("#finalAssistanceStatus")!.textContent).toBe(
+      "挑戰模式・未使用輔助",
+    );
+  });
+
+  it("[Q07] When 使用輔助後重開, Then 新局結算標示未使用輔助", () => {
+    document
+      .querySelector<HTMLButtonElement>("#quickPhraseChips button")!
+      .click();
+    game.startNewSession();
+    game.finishStage();
+    expect(state.hasUsedAssistance).toBe(false);
+    expect(
+      document.querySelector("#finalAssistanceStatus")!.textContent,
+    ).toContain("未使用輔助");
+  });
+
+  it("[Q19] Given 手動錯字, When 使用輔助修正與完成, Then 原錯誤保留且不灌高精準度", () => {
+    type("AX");
+    const input = document.querySelector<HTMLTextAreaElement>("#typingInput")!;
+    input.value = "ABCDEFGHIJ";
+    game.handleTypingProgress("assist");
+    expect(state.correctChars).toBe(1);
+    expect(state.errorCount).toBe(1);
+    expect(document.querySelector("#statAcc")!.textContent).toBe("50");
+    game.finishStage();
+    expect(document.querySelector("#finalAccVal")!.textContent).toBe("50%");
+  });
+
+  it("[Q07] When 複製成績, Then 包含難度與實際輔助使用標示", async () => {
+    await bindEvents();
+    const writeText = vi
+      .spyOn(navigator.clipboard, "writeText")
+      .mockResolvedValue();
+    document.querySelector<HTMLButtonElement>("#btnAutoFillWord")!.click();
+    game.finishStage();
+    document.querySelector<HTMLButtonElement>("#btnCopyReport")!.click();
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining("體驗模式・已使用輔助"),
+    );
+  });
+
+  it("[Q19, Q26] When 點擊快速詞組, Then 給遊戲分但不增加手動統計", () => {
+    document
+      .querySelector<HTMLButtonElement>("#quickPhraseChips button")!
+      .click();
+    expect(state.score).toBe(355);
+    expect(state.combo).toBe(10);
+    expect(state.correctChars).toBe(0);
+    expect(state.totalTypedChars).toBe(0);
+    expect(state.hasUsedAssistance).toBe(true);
+  });
+
+  it("[Q19, Q26] When 自動略過句中與句尾標點, Then 不給標點字元分", () => {
+    state.queue[0] = question("punct", "A,B.");
+    state.skipPunct = true;
+    game.renderCurrentStep();
+    type("AB");
+    expect(state.score).toBe(150);
+    expect(state.combo).toBe(2);
+    expect(state.correctChars).toBe(2);
+    expect(state.totalTypedChars).toBe(2);
+  });
+
+  it("[Q19] Given 已補入自動標點, When 繼續手打, Then 舊標點仍不計手動字數", () => {
+    state.queue[0] = question("punct", "A,B.C");
+    state.skipPunct = true;
+    game.renderCurrentStep();
+    type("A");
+    type("A,B");
+    type("A,B.C");
+    expect(state.score).toBe(175);
+    expect(state.combo).toBe(3);
+    expect(state.correctChars).toBe(3);
+  });
+
+  it("[Q07] When 體驗模式未使用輔助而結算, Then 標示未使用輔助", () => {
+    game.finishStage();
+    expect(
+      document.querySelector("#finalAssistanceStatus")?.textContent,
+    ).toContain("未使用輔助");
+  });
+
+  it("[Q07] When 使用快速詞組後結算, Then 標示體驗與已使用輔助", () => {
+    document
+      .querySelector<HTMLButtonElement>("#quickPhraseChips button")!
+      .click();
+    game.finishStage();
+    expect(
+      document.querySelector("#finalAssistanceStatus")?.textContent,
+    ).toContain("體驗");
+    expect(
+      document.querySelector("#finalAssistanceStatus")?.textContent,
+    ).toContain("已使用輔助");
+  });
+
   it("[SCORE-02] Given 8 Combo, When 一次確認 4 字, Then 字元分增加 115", () => {
     state.combo = 8;
     type("ABCD");

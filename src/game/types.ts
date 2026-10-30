@@ -25,8 +25,12 @@ export interface GameState extends ScoringState {
   queue: ScriptLine[];
   currentIndex: number;
   isComposing: boolean;
-  startTime: number | null;
+  sessionMode: Exclude<Mode, "script">;
+  typingClock: TypingClock;
+  result: Readonly<SessionResult> | null;
+  sessionError: boolean;
   clozeAnswered: boolean;
   activeClozeBlank: string;
 }
 import type { ScoringState } from "./scoring";
+import type { TypingClock, SessionResult } from "./statistics";

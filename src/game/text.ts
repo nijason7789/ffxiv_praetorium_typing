@@ -1,5 +1,6 @@
 import { state } from "./state";
 import type { ScriptLine } from "./types";
+import type { InputSource } from "./input-source";
 export const PUNCT_SET = new Set([
   "，",
   "。",
@@ -58,11 +59,20 @@ export function normalizeForCompare(str: string) {
   return out;
 }
 export function computeEffectiveInput(rawInput: string, targetStr: string) {
-  if (!state.skipPunct) return rawInput;
+  return computeEffectiveInputWithSources(rawInput, targetStr).text;
+}
+
+export function computeEffectiveInputWithSources(
+  rawInput: string,
+  targetStr: string,
+  rawSources: InputSource[] = Array(rawInput.length).fill("manual"),
+) {
+  if (!state.skipPunct) return { text: rawInput, sources: rawSources };
   const normInput = normalizeForCompare(rawInput);
   const normTarget = normalizeForCompare(targetStr);
 
   let result = "";
+  const sources: InputSource[] = [];
   let tIdx = 0;
   for (let i = 0; i < normInput.length && tIdx < normTarget.length; i++) {
     const inChar = normInput[i];
@@ -73,10 +83,12 @@ export function computeEffectiveInput(rawInput: string, targetStr: string) {
       inChar !== normTarget[tIdx]
     ) {
       result += targetStr[tIdx];
+      sources.push("automatic");
       tIdx++;
     }
     if (tIdx < normTarget.length) {
       result += rawInput[i];
+      sources.push(rawSources[i] ?? "manual");
       tIdx++;
     }
   }
@@ -91,10 +103,11 @@ export function computeEffectiveInput(rawInput: string, targetStr: string) {
       normalizeForCompare(result[tIdx - 1]) === normTarget[tIdx - 1]
     ) {
       result += targetStr[tIdx];
+      sources.push("automatic");
       tIdx++;
     } else {
       break;
     }
   }
-  return result;
+  return { text: result, sources };
 }

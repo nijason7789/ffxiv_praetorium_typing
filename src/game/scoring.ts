@@ -1,6 +1,13 @@
+import {
+  changedRange,
+  reconcileInputSources,
+  type InputSource,
+} from "./input-source";
+
 /** Pure per-session scoring rules. No DOM, timers, storage or global game state. */
 interface QuestionScore {
   previousInput: string;
+  inputSources: InputSource[];
   rewardedPositions: number[];
   completed: boolean;
   rpgRewarded: boolean;
@@ -13,6 +20,7 @@ export interface ScoringState {
   correctChars: number;
   totalTypedChars: number;
   errorCount: number;
+  hasUsedAssistance: boolean;
   scoreProgress: Record<string, QuestionScore>;
 }
 
@@ -24,6 +32,7 @@ export function createScoringState(): ScoringState {
     correctChars: 0,
     totalTypedChars: 0,
     errorCount: 0,
+    hasUsedAssistance: false,
     scoreProgress: {},
   };
 }
@@ -32,6 +41,7 @@ function questionScore(state: ScoringState, id: string): QuestionScore {
   return (
     state.scoreProgress[id] ?? {
       previousInput: "",
+      inputSources: [],
       rewardedPositions: [],
       completed: false,
       rpgRewarded: false,
@@ -59,25 +69,6 @@ function addCombo(state: ScoringState, amount: number) {
   state.maxCombo = Math.max(state.maxCombo, state.combo);
 }
 
-/** Find the inserted/replaced range; deletion and shifted old suffixes aren't new input. */
-function changedRange(previous: string, input: string) {
-  let start = 0;
-  while (
-    start < previous.length &&
-    start < input.length &&
-    previous[start] === input[start]
-  )
-    start++;
-  let suffix = 0;
-  while (
-    suffix < previous.length - start &&
-    suffix < input.length - start &&
-    previous[previous.length - 1 - suffix] === input[input.length - 1 - suffix]
-  )
-    suffix++;
-  return { start, end: input.length - suffix };
-}
-
 export function resetTypingInput(
   state: ScoringState,
   questionId: string,
@@ -85,6 +76,7 @@ export function resetTypingInput(
   return withQuestion(state, questionId, {
     ...questionScore(state, questionId),
     previousInput: "",
+    inputSources: [],
   });
 }
 
@@ -95,11 +87,24 @@ export function scoreTyping(
     questionId: string;
     target: string;
     input: string;
+    source?: InputSource;
+    inputSources?: InputSource[];
   },
 ): ScoringState {
   const { questionId, target, input } = attempt;
   const previous = questionScore(state, questionId);
   const next = { ...state };
+  const source = attempt.source ?? "manual";
+  const inputSources =
+    attempt.inputSources ??
+    reconcileInputSources(
+      previous.previousInput,
+      previous.inputSources,
+      input,
+      source,
+    );
+  next.hasUsedAssistance ||=
+    source === "assist" || inputSources.includes("assist");
   const rewarded = new Set(previous.rewardedPositions);
   const changed = changedRange(previous.previousInput, input);
   let prefixLength = 0;
@@ -116,18 +121,21 @@ export function scoreTyping(
       index < changed.end &&
       input[index] !== target[index]
     ) {
-      next.errorCount++;
+      if (inputSources[index] === "manual") next.errorCount++;
       next.combo = 0;
     } else if (
       !previous.completed &&
       index < prefixLength &&
       !rewarded.has(index)
     ) {
+      if (inputSources[index] === "automatic") continue;
       rewarded.add(index);
       addCombo(next, 1);
       next.score += Math.round(25 * multiplier(next.combo));
-      next.correctChars++;
-      next.totalTypedChars++;
+      if (inputSources[index] === "manual") {
+        next.correctChars++;
+        next.totalTypedChars++;
+      }
     }
   }
 
@@ -136,6 +144,7 @@ export function scoreTyping(
   return withQuestion(next, questionId, {
     ...previous,
     previousInput: input,
+    inputSources: [...inputSources],
     rewardedPositions: [...rewarded],
     completed: previous.completed || complete,
   });

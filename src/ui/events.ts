@@ -9,6 +9,7 @@ import {
   renderClozeStep,
   verifyClozeAnswer,
   copyTextSafe,
+  selectMode,
 } from "../game/app";
 import { state } from "../game/state";
 import { getLinePrimaryText } from "../game/text";
@@ -32,23 +33,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Mode navigation buttons
   element("navModeTyping").addEventListener("click", () => {
-    state.mode = "typing";
-    updateNavigationTabs();
-    startNewSession();
+    selectMode("typing");
   });
   element("navModeCloze").addEventListener("click", () => {
-    state.mode = "cloze";
-    updateNavigationTabs();
-    startNewSession();
+    selectMode("cloze");
   });
   element("navModeExam").addEventListener("click", () => {
-    state.mode = "exam";
-    updateNavigationTabs();
-    startNewSession();
+    selectMode("exam");
   });
   element("navModeScript").addEventListener("click", () => {
-    state.mode = "script";
-    updateNavigationTabs();
+    selectMode("script");
   });
 
   // Act filter buttons
@@ -97,12 +91,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Prev / Next / Restart buttons
   element("btnPrevLine").addEventListener("click", () => {
+    if (state.result || state.sessionError || state.mode === "script") return;
     if (state.currentIndex > 0) {
       state.currentIndex--;
       renderCurrentStep();
     }
   });
   element("btnNextLine").addEventListener("click", () => {
+    if (state.result || state.sessionError || state.mode === "script") return;
     if (state.currentIndex < state.queue.length - 1) {
       state.currentIndex++;
       renderCurrentStep();
@@ -110,8 +106,15 @@ window.addEventListener("DOMContentLoaded", () => {
       finishStage();
     }
   });
-  element("btnRestartStage").addEventListener("click", startNewSession);
-  element("btnPlayAgain").addEventListener("click", startNewSession);
+  element("btnRestartStage").addEventListener("click", () =>
+    startNewSession([...state.queue]),
+  );
+  element("btnPlayAgain").addEventListener("click", () =>
+    startNewSession([...state.queue]),
+  );
+  element("sessionReload").addEventListener("click", () =>
+    window.location.reload(),
+  );
 
   // Standard Typing Input & IME Composition events
   const typingInput = element("typingInput");
@@ -134,11 +137,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Auto-fill next characters helper button
   element("btnAutoFillWord").addEventListener("click", () => {
-    if (state.difficulty !== "experience") return;
+    if (
+      state.difficulty !== "experience" ||
+      state.result ||
+      state.sessionError ||
+      state.mode === "script"
+    )
+      return;
     const item = state.queue[state.currentIndex];
     if (!item) return;
     const targetText = getLinePrimaryText(item);
-    if (!state.startTime) state.startTime = Date.now();
     const currentLen = typingInput.value.length;
     const stepSize = state.lang === "en" ? 10 : 4;
     const nextSlice = targetText.slice(
@@ -146,7 +154,7 @@ window.addEventListener("DOMContentLoaded", () => {
       Math.min(targetText.length, currentLen + stepSize),
     );
     typingInput.value = nextSlice;
-    handleTypingProgress();
+    handleTypingProgress("assist");
     typingInput.focus();
   });
 
@@ -184,7 +192,9 @@ window.addEventListener("DOMContentLoaded", () => {
       jp: "日本語版",
       en: "English Version",
     }[state.lang];
-    const text = `【FFXIV 最終決戰 天幕魔導城・蓋老師隨堂考 (${langName})】\n評級：${rank}\n功績總分：${score} | 字速：${cpm} | 精準度：${acc}`;
+    const assistance = element("finalAssistanceStatus").textContent;
+    const completion = element("finalCompletionVal").textContent;
+    const text = `【FFXIV 最終決戰 天幕魔導城・蓋老師隨堂考 (${langName})】\n${assistance}\n評級：${rank}\n完成率：${completion}\n功績總分：${score} | 字速：${cpm} | 精準度：${acc}`;
     copyTextSafe(text, () => {
       const toast = element("copyToastMsg");
       toast.classList.remove("hidden");

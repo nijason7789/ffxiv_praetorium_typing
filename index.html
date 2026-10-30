@@ -495,7 +495,7 @@
                 <div
                   id="stageProgressBar"
                   class="h-full bg-gradient-to-r from-amber-600 via-amber-400 to-sky-400 rounded-full transition-all duration-300"
-                  style="width: 8%"
+                  style="width: 0%"
                 ></div>
               </div>
             </div>
@@ -564,7 +564,9 @@
                     class="text-xl sm:text-2xl font-black text-amber-300"
                     >0</span
                   >
-                  <span class="text-[11px] text-slate-400">字/分</span>
+                  <span id="statCpmUnit" class="text-[11px] text-slate-400"
+                    >字/分</span
+                  >
                 </div>
               </div>
               <div
@@ -577,7 +579,9 @@
                     class="text-xl sm:text-2xl font-black text-emerald-400"
                     >100</span
                   >
-                  <span class="text-[11px] text-slate-400">%</span>
+                  <span id="statAccUnit" class="text-[11px] text-slate-400"
+                    >%</span
+                  >
                 </div>
               </div>
               <div
@@ -658,6 +662,20 @@
       <!-- VIEW 1: INTERACTIVE GAME STAGE (TYPING / CLOZE / EXAM)    -->
       <!-- ========================================================= -->
       <section id="viewGameStage" class="flex flex-col gap-4">
+        <div
+          id="sessionNoticeBox"
+          class="hidden text-sm text-amber-200"
+          role="status"
+        >
+          <p id="sessionNotice" class="hidden"></p>
+          <button
+            id="sessionReload"
+            type="button"
+            class="hidden underline mt-2"
+          >
+            重新整理頁面
+          </button>
+        </div>
         <!-- Optional RPG Dialogue Question Modal -->
         <div
           id="rpgPromptCard"
@@ -909,6 +927,13 @@
               <p id="resultRankQuote" class="text-sm text-slate-300 mt-1">
                 「實在太精彩了，冒險者。你擁有足以成為統治者的打字力量！」
               </p>
+              <p
+                id="finalAssistanceStatus"
+                class="text-sm text-amber-200 mt-2"
+              ></p>
+              <p class="text-sm text-slate-300 mt-1">
+                完成率：<span id="finalCompletionVal">0 / 0 題（0%）</span>
+              </p>
             </div>
             <div class="flex items-center gap-2 self-end md:self-center">
               <button
@@ -1032,8 +1057,14 @@
       class="max-w-6xl w-full mx-auto px-3 sm:px-6 py-5 text-center space-y-1.5 border-t border-slate-800/90 bg-[#07090e]/90"
     >
       <div class="space-y-1 pb-2 text-xs text-slate-400">
-        <p>製作：<span class="font-semibold text-amber-200">伊東慕、蜂窩性祖獅爺</span></p>
-        <p>公會：<span class="font-semibold text-amber-200">欸呼欸呼石室</span></p>
+        <p>
+          製作：<span class="font-semibold text-amber-200"
+            >伊東慕、蜂窩性祖獅爺</span
+          >
+        </p>
+        <p>
+          公會：<span class="font-semibold text-amber-200">欸呼欸呼石室</span>
+        </p>
       </div>
       <p class="text-xs font-semibold text-amber-200/90">
         ⚠️ 版權聲明：本網頁所使用或引用之《Final Fantasy
