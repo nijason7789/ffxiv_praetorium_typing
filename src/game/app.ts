@@ -29,11 +29,21 @@ import {
 } from "./statistics";
 import { element } from "../ui/dom";
 import { resetImeGuards } from "../ui/ime";
+import { hasPageError, onPageError } from "../ui/page-error";
 import type { ScriptLine, Language, Mode, Act } from "./types";
 let advanceTimer: ReturnType<typeof setTimeout> | undefined;
 let activeTimingQuestion = "";
 let resumeAfterArchive = false;
 let archiveNeedsRender = false;
+
+onPageError(() => {
+  cancelPendingAdvance();
+  pauseClock();
+  resetImeGuards();
+  state.isComposing = false;
+  state.sessionError = true;
+  state.result = null;
+});
 
 function resetCompositionState() {
   resetImeGuards();
@@ -65,6 +75,7 @@ function cancelPendingAdvance() {
 function focusGameInput(input: HTMLElement) {
   setTimeout(() => {
     if (
+      !hasPageError() &&
       element("langSelectModal").classList.contains("hidden") &&
       element("difficultySelectModal").classList.contains("hidden")
     )
@@ -133,6 +144,7 @@ function showNoQuestions() {
 }
 
 export function selectMode(mode: Mode) {
+  if (hasPageError()) return;
   if (mode === "script") {
     if (state.mode === "script") return;
     resetCompositionState();
@@ -199,6 +211,7 @@ function updateLangUI() {
 }
 
 export function startNewSession(questions?: ScriptLine[]) {
+  if (hasPageError()) return;
   cancelPendingAdvance();
   if (state.mode === "script") state.mode = state.sessionMode;
   state.sessionMode = state.mode;

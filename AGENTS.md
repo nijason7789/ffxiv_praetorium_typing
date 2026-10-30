@@ -19,6 +19,8 @@
 - `src/game/statistics.ts`：純計時與統計規則；控制器負責傳入時間、有效題目與保存結算結果。
 - `src/game/app.ts`：遊戲控制、渲染與結算；`src/game/scoring.ts`：不依賴 DOM 的計分規則與同局獎勵紀錄。新增可獨立測試的遊戲規則時，優先抽成純函式。
 - `src/ui/events.ts`：使用者操作與輸入法事件；`src/ui/dom.ts` 提供具型別及存在檢查的 DOM 存取。
+- `src/ui/required-elements.ts`：啟動前的必要靜態 ID 清單，新增控制器依賴時同步更新；動態產生的元素由使用時檢查。
+- `src/ui/page-error.ts`：獨立錯誤畫面與缺件錯誤界線；錯誤復原不可再依賴原本的必要 ID，且不能吞掉其他程式錯誤。
 - `src/ui/ime.ts`：一般打字與填空的組字事件保護。換題、重新抽詞、重開或結算時需清除保護狀態，避免舊組字事件套用至新題目。
 - `src/services/clipboard.ts`：Clipboard API 與備援複製；`src/ui/copy-feedback.ts`：共用複製提示及可取消的三秒計時器。
 - `src/services/`：打字音效與本機 BGM 控制，避免將播放邏輯混入文字比對或計分。
@@ -32,6 +34,7 @@
 - `tests/ime.integration.test.ts`：選字 Enter、事件順序、長按、空白答案與換題重設的 BDD 情境；模擬事件不取代作業系統輸入法驗收。
 - `tests/clipboard.integration.test.ts`：複製成功、備援、最終失敗、焦點還原及提示競態的 BDD 情境。
 - `tests/audio.test.ts`、`tests/audio.integration.test.ts`：音效初始化／恢復／節點失敗，以及不中斷遊戲或 BGM 的 BDD 情境。
+- `tests/page-error.test.ts`、`tests/page-error.integration.test.ts`：必要元件缺失、停止場次、焦點與重新整理，以及錯誤界線的 BDD 情境。
 
 ## 行為與實作原則
 

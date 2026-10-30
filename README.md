@@ -62,6 +62,8 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 - `src/ui/copy-feedback.ts`：成績單、全文與巨集共用的複製提示。
 - `src/ui/setup.ts`：語言與難度選擇流程。
 - `src/ui/dom.ts`：具型別與存在檢查的 DOM 存取。
+- `src/ui/required-elements.ts`：啟動前檢查必要靜態元件。
+- `src/ui/page-error.ts`：缺件時停止本局並顯示獨立錯誤畫面與重新整理入口。
 - `src/services/`：Web Audio 音效與本機 BGM 播放控制。
 - `src/services/clipboard.ts`：剪貼簿 API 與備援複製的成功／失敗處理。
 - `src/styles/`：Tailwind 入口與黑金主題。
@@ -87,6 +89,8 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 第五批增加 15 項剪貼簿情境，目前合計 154 項測試。複製失敗時嘗試備援，備援失敗顯示畫面下方紅色提示；三種複製入口共用提示，每次結果顯示三秒，連續成功由最後一次重新計時。備援完成後移除暫存輸入框並還原焦點與選取。
 
 第六批增加 21 項音效情境，目前合計 175 項測試。短音效初始化、恢復或節點操作失敗時安全略過，遊戲與 BGM 可繼續；恢復尚未完成時不累積音符，已關閉的 context 在下一次操作重新建立。正常音效共用 context，音符結束後釋放連線，既有音色、音量與音符長度維持原值。
+
+第七批增加 17 項頁面錯誤情境，目前合計 192 項測試。必要元件缺失時停止場次、取消換題並清除結算結果，顯示「頁面載入異常」與可用鍵盤操作的重新整理按鈕。錯誤畫面獨立建立，原畫面與 BGM 停止；缺少的 ID 仍保留於程式錯誤資訊，其他程式錯誤不會被當成缺件處理。
 
 ## 遊戲難度
 
