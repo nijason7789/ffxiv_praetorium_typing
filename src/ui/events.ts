@@ -8,7 +8,6 @@ import {
   handleTypingProgress,
   renderClozeStep,
   verifyClozeAnswer,
-  copyTextSafe,
   selectMode,
 } from "../game/app";
 import { state } from "../game/state";
@@ -20,6 +19,7 @@ import { element } from "./dom";
 import type { Act } from "../game/types";
 import { initializeSetup } from "./setup";
 import { bindIme } from "./ime";
+import { copyWithFeedback } from "./copy-feedback";
 window.addEventListener("DOMContentLoaded", () => {
   initializeBgm();
   initializeSetup();
@@ -196,33 +196,27 @@ window.addEventListener("DOMContentLoaded", () => {
     const assistance = element("finalAssistanceStatus").textContent;
     const completion = element("finalCompletionVal").textContent;
     const text = `【FFXIV 最終決戰 天幕魔導城・蓋老師隨堂考 (${langName})】\n${assistance}\n評級：${rank}\n完成率：${completion}\n功績總分：${score} | 字速：${cpm} | 精準度：${acc}`;
-    copyTextSafe(text, () => {
-      const toast = element("copyToastMsg");
-      toast.classList.remove("hidden");
-      setTimeout(() => toast.classList.add("hidden"), 3000);
-    });
+    void copyWithFeedback(text, "✔ 已複製成績單！可貼上至隊伍頻道或社群分享。");
   });
 
   element("btnCopyFullSpeech").addEventListener("click", () => {
     const lines = PRAETORIUM_SCRIPT.map((i) => getLinePrimaryText(i)).join(
       "\n",
     );
-    copyTextSafe(lines, () => {
-      const status = element("macroCopyStatus");
-      status.textContent = "✔ 已複製當前語言的蓋烏斯＆拉哈布雷亞演講全文！";
-      status.classList.remove("hidden");
-    });
+    void copyWithFeedback(
+      lines,
+      "✔ 已複製當前語言的蓋烏斯＆拉哈布雷亞演講全文！",
+    );
   });
 
   element("btnCopyFFMacro").addEventListener("click", () => {
     const macroLines = PRAETORIUM_SCRIPT.slice(0, 14)
       .map((i) => `/p ${getLinePrimaryText(i)} <wait.3>`)
       .join("\n");
-    copyTextSafe(macroLines, () => {
-      const status = element("macroCopyStatus");
-      status.textContent = "✔ 已複製 FFXIV 隊伍頻道巨集 (/p 附帶 <wait.3>)！";
-      status.classList.remove("hidden");
-    });
+    void copyWithFeedback(
+      macroLines,
+      "✔ 已複製 FFXIV 隊伍頻道巨集 (/p 附帶 <wait.3>)！",
+    );
   });
 
   // Initialize initial view behind the language selection modal

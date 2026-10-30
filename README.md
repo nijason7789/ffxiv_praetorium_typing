@@ -59,9 +59,11 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 - `src/game/statistics.ts`：不依賴 DOM 的打字計時、CPM、精準度、完成率與評級規則。
 - `src/ui/events.ts`：操作事件綁定。
 - `src/ui/ime.ts`：打字／填空組字保護及選字 Enter 防誤送。
+- `src/ui/copy-feedback.ts`：成績單、全文與巨集共用的複製提示。
 - `src/ui/setup.ts`：語言與難度選擇流程。
 - `src/ui/dom.ts`：具型別與存在檢查的 DOM 存取。
 - `src/services/`：Web Audio 音效與本機 BGM 播放控制。
+- `src/services/clipboard.ts`：剪貼簿 API 與備援複製的成功／失敗處理。
 - `src/styles/`：Tailwind 入口與黑金主題。
 - `public/images/`：從原始 HTML 抽出的圖片。
 - `public/audio/`：背景音樂檔案。
@@ -81,6 +83,8 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 第三批增加 34 項情境，目前合計 119 項測試。CPM 從手動輸入開始計時，排除填空、全文閱讀與完成後等待；純填空顯示「不適用」。返回原模式保留場次與輸入，從全文選句則建立獨立單題練習。完成率按答對題數／有效題數顯示，跳題不算完成；精準度與評級依可統計作答計算，沒有資料時顯示「無資料」。結算後鎖定成績，重開才重新計分。
 
 第四批增加 20 項 IME 情境，目前合計 139 項測試。填空組字期間不判定答案，Enter 確認選字後需再按一次才送出；換題、重新抽詞、重開及結算會清除組字保護。實際中文／日文輸入法的手動驗收步驟見 BDD 文件第 12 節。
+
+第五批增加 15 項剪貼簿情境，目前合計 154 項測試。複製失敗時嘗試備援，備援失敗顯示畫面下方紅色提示；三種複製入口共用提示，每次結果顯示三秒，連續成功由最後一次重新計時。備援完成後移除暫存輸入框並還原焦點與選取。
 
 ## 遊戲難度
 

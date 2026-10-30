@@ -991,12 +991,6 @@
               </div>
             </div>
           </div>
-          <p
-            id="copyToastMsg"
-            class="hidden text-xs text-emerald-400 mt-3 font-medium"
-          >
-            ✔ 已複製到剪貼簿！可直接貼上至隊伍頻道或社群分享。
-          </p>
         </div>
       </section>
 
@@ -1039,11 +1033,6 @@
           </div>
         </div>
 
-        <div
-          id="macroCopyStatus"
-          class="hidden text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-700/60 px-3 py-2 rounded-lg"
-        ></div>
-
         <!-- Full Script List -->
         <div
           id="scriptArchiveContainer"
@@ -1077,6 +1066,13 @@
       </p>
     </footer>
 
+    <p
+      id="copyToastMsg"
+      class="hidden"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></p>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
