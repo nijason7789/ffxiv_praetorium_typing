@@ -28,11 +28,18 @@ import {
   pauseTypingClock,
 } from "./statistics";
 import { element } from "../ui/dom";
+import { resetImeGuards } from "../ui/ime";
 import type { ScriptLine, Language, Mode, Act } from "./types";
 let advanceTimer: ReturnType<typeof setTimeout> | undefined;
 let activeTimingQuestion = "";
 let resumeAfterArchive = false;
 let archiveNeedsRender = false;
+
+function resetCompositionState() {
+  resetImeGuards();
+  state.isComposing = false;
+  element("imeStatusBadge").classList.add("hidden");
+}
 
 function pauseClock() {
   state.typingClock = pauseTypingClock(state.typingClock, Date.now());
@@ -128,6 +135,7 @@ function showNoQuestions() {
 export function selectMode(mode: Mode) {
   if (mode === "script") {
     if (state.mode === "script") return;
+    resetCompositionState();
     resumeAfterArchive = state.typingClock.startedAt !== null && canAnswer();
     pauseClock();
     archiveNeedsRender = advanceTimer !== undefined;
@@ -204,8 +212,7 @@ export function startNewSession(questions?: ScriptLine[]) {
   archiveNeedsRender = false;
   Object.assign(state, createScoringState());
   state.clozeAnswered = false;
-  state.isComposing = false;
-  element("imeStatusBadge").classList.add("hidden");
+  resetCompositionState();
   element("typingInput").disabled = false;
   element("clozeInput").disabled = false;
   element("sessionNotice").classList.add("hidden");
@@ -319,6 +326,7 @@ function renderSubtitlesForLanguage(item: ScriptLine) {
 export function renderCurrentStep() {
   cancelPendingAdvance();
   if (isSessionLocked() || state.mode === "script") return;
+  resetCompositionState();
   if (!validQuestionIds().length) {
     showNoQuestions();
     return;
@@ -574,6 +582,7 @@ export function handleTypingProgress(source: InputSource = "manual") {
 // =========================================================================
 export function renderClozeStep(item: ScriptLine, primarySentence: string) {
   if (!canAnswer()) return;
+  resetCompositionState();
   cancelPendingAdvance();
   pauseClock();
   state.clozeAnswered = false;
@@ -616,6 +625,7 @@ export function renderClozeStep(item: ScriptLine, primarySentence: string) {
 }
 
 export function verifyClozeAnswer(userAnswerRaw: string) {
+  if (state.isComposing) return;
   if (!canAnswer() || !isCurrentStepCloze()) return;
   if (state.clozeAnswered) return;
   const item = state.queue[state.currentIndex];
@@ -685,6 +695,7 @@ export function verifyClozeAnswer(userAnswerRaw: string) {
 // =========================================================================
 export function finishStage() {
   if (isSessionLocked()) return;
+  resetCompositionState();
   cancelPendingAdvance();
   pauseClock();
   const stats = currentStats();

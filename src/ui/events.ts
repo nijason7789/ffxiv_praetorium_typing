@@ -19,6 +19,7 @@ import { initializeBgm, setBgmVolume, toggleBgm } from "../services/bgm";
 import { element } from "./dom";
 import type { Act } from "../game/types";
 import { initializeSetup } from "./setup";
+import { bindIme } from "./ime";
 window.addEventListener("DOMContentLoaded", () => {
   initializeBgm();
   initializeSetup();
@@ -120,19 +121,20 @@ window.addEventListener("DOMContentLoaded", () => {
   const typingInput = element("typingInput");
   const imeBadge = element("imeStatusBadge");
 
-  typingInput.addEventListener("compositionstart", () => {
-    state.isComposing = true;
-    imeBadge.classList.remove("hidden");
-  });
-  typingInput.addEventListener("compositionend", () => {
-    state.isComposing = false;
-    imeBadge.classList.add("hidden");
-    handleTypingProgress();
-  });
-  typingInput.addEventListener("input", () => {
-    if (!state.isComposing) {
-      handleTypingProgress();
-    }
+  const canUseInput = (panel: string) =>
+    !state.result &&
+    !state.sessionError &&
+    state.mode !== "script" &&
+    !element(panel).classList.contains("hidden");
+  const onCompositionChange = (composing: boolean) => {
+    state.isComposing = composing;
+    imeBadge.classList.toggle("hidden", !composing);
+  };
+  bindIme(typingInput, {
+    isActive: () => canUseInput("panelStandardTyping"),
+    onCompositionChange,
+    onCommit: () => handleTypingProgress(),
+    onInput: () => handleTypingProgress(),
   });
 
   // Auto-fill next characters helper button
@@ -160,11 +162,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Cloze Mode Input & Buttons
   const clozeInput = element("clozeInput");
-  clozeInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !state.isComposing) {
-      e.preventDefault();
-      verifyClozeAnswer(clozeInput.value);
-    }
+  bindIme(clozeInput, {
+    isActive: () => canUseInput("panelClozeMode"),
+    onCompositionChange,
+    onEnter: () => verifyClozeAnswer(clozeInput.value),
   });
   element("btnSubmitCloze").addEventListener("click", () => {
     verifyClozeAnswer(clozeInput.value);

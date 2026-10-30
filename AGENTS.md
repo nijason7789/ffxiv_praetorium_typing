@@ -19,6 +19,7 @@
 - `src/game/statistics.ts`：純計時與統計規則；控制器負責傳入時間、有效題目與保存結算結果。
 - `src/game/app.ts`：遊戲控制、渲染與結算；`src/game/scoring.ts`：不依賴 DOM 的計分規則與同局獎勵紀錄。新增可獨立測試的遊戲規則時，優先抽成純函式。
 - `src/ui/events.ts`：使用者操作與輸入法事件；`src/ui/dom.ts` 提供具型別及存在檢查的 DOM 存取。
+- `src/ui/ime.ts`：一般打字與填空的組字事件保護。換題、重新抽詞、重開或結算時需清除保護狀態，避免舊組字事件套用至新題目。
 - `src/services/`：打字音效與本機 BGM 控制，避免將播放邏輯混入文字比對或計分。
 - `src/styles/`：Tailwind 入口與主題樣式。新增 class 時須確認 Tailwind 能從原始碼掃描到完整名稱。
 - `public/images/`：圖片資產；新增圖片使用獨立檔案。
@@ -27,6 +28,7 @@
 - `tests/scoring.test.ts`、`tests/scoring.integration.test.ts`：BDD 計分情境，分別驗證純規則與 DOM 整合；功能決議與進度見 `docs/BDD-FEATURE-CATALOG.md`。
 - `tests/input-source.test.ts`：手動／輔助／自動標點的計分與統計邊界。
 - `tests/statistics.test.ts`、`tests/session.integration.test.ts`：計時／評級規則，以及閱讀、單句練習、完成率與結算鎖定的整合情境。
+- `tests/ime.integration.test.ts`：選字 Enter、事件順序、長按、空白答案與換題重設的 BDD 情境；模擬事件不取代作業系統輸入法驗收。
 
 ## 行為與實作原則
 
