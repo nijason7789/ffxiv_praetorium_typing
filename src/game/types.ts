@@ -14,7 +14,7 @@ export interface ScriptLine {
   clozePool: Localized<string[]>;
   rpgQuestion?: Localized<{ prompt: string; choices: string[] }>;
 }
-export interface GameState {
+export interface GameState extends ScoringState {
   lang: Language;
   difficulty: Difficulty;
   mode: Mode;
@@ -26,14 +26,7 @@ export interface GameState {
   currentIndex: number;
   isComposing: boolean;
   startTime: number | null;
-  totalTypedChars: number;
-  correctChars: number;
-  errorCount: number;
-  combo: number;
-  maxCombo: number;
-  score: number;
-  lastMatchedLen: number;
   clozeAnswered: boolean;
   activeClozeBlank: string;
-  rpgAnsweredForLine: Record<string, boolean>;
 }
+import type { ScoringState } from "./scoring";

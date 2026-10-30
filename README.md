@@ -53,7 +53,8 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 - `src/game/types.ts`：語言、模式、題目及遊戲狀態型別。
 - `src/game/state.ts`：目前遊戲狀態。
 - `src/game/text.ts`：文字正規化、語言取值與標點略過。
-- `src/game/app.ts`：遊戲控制、題目呈現與計分。
+- `src/game/app.ts`：遊戲控制、題目呈現與結算。
+- `src/game/scoring.ts`：不依賴 DOM 的逐字倍率、錯誤紀錄與同局獎勵防重規則。
 - `src/ui/events.ts`：操作事件綁定。
 - `src/ui/setup.ts`：語言與難度選擇流程。
 - `src/ui/dom.ts`：具型別與存在檢查的 DOM 存取。
@@ -69,6 +70,8 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 ## BDD 功能盤點與測試規劃
 
 [功能盤點與 BDD 測試清單](docs/BDD-FEATURE-CATALOG.md) 列出功能的 Given／When／Then 情境、建議測試層級、現有覆蓋，以及經 27 題問答確認的 13 項產品決議。文件區分盤點時的程式現況與已確認但待實作的新預期，供後續補測與 refactor 使用。
+
+首批計分規則已建立 21 項純規則測試與 10 項 DOM 整合測試，採 Feature／Given／When／Then 描述倍率、錯誤紀錄及獎勵防重。後續以同樣流程逐批補測與實作，詳細範圍見文件第 9 節。
 
 ## 遊戲難度
 

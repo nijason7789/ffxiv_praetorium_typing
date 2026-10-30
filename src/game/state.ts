@@ -1,4 +1,5 @@
 import type { GameState } from "./types";
+import { createScoringState } from "./scoring";
 export const state: GameState = {
   lang: "zh", // 'zh' | 'jp' | 'en'
   difficulty: "experience",
@@ -11,14 +12,7 @@ export const state: GameState = {
   currentIndex: 0,
   isComposing: false,
   startTime: null,
-  totalTypedChars: 0,
-  correctChars: 0,
-  errorCount: 0,
-  combo: 0,
-  maxCombo: 0,
-  score: 0,
-  lastMatchedLen: 0,
+  ...createScoringState(),
   clozeAnswered: false,
   activeClozeBlank: "",
-  rpgAnsweredForLine: {},
 };

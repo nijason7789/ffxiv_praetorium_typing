@@ -15,13 +15,14 @@
 - `src/data/praetorium.ts`：繁中、日文、英文台詞及各語言的填空詞、干擾選項。
 - `src/game/types.ts`、`state.ts`：領域型別與遊戲狀態。
 - `src/game/text.ts`：文字正規化、語言選取、標點略過。
-- `src/game/app.ts`：目前的遊戲控制、渲染、計分與結算。新增可獨立測試的遊戲規則時，優先抽成不依賴 DOM 的函式。
+- `src/game/app.ts`：遊戲控制、渲染與結算；`src/game/scoring.ts`：不依賴 DOM 的計分規則與同局獎勵紀錄。新增可獨立測試的遊戲規則時，優先抽成純函式。
 - `src/ui/events.ts`：使用者操作與輸入法事件；`src/ui/dom.ts` 提供具型別及存在檢查的 DOM 存取。
 - `src/services/`：打字音效與本機 BGM 控制，避免將播放邏輯混入文字比對或計分。
 - `src/styles/`：Tailwind 入口與主題樣式。新增 class 時須確認 Tailwind 能從原始碼掃描到完整名稱。
 - `public/images/`：圖片資產；新增圖片使用獨立檔案。
 - `public/audio/`：本機 BGM 音檔，隨靜態網站一併部署。
 - `tests/game.test.ts`：以 Vitest + happy-dom 執行的互動測試。
+- `tests/scoring.test.ts`、`tests/scoring.integration.test.ts`：BDD 計分情境，分別驗證純規則與 DOM 整合；功能決議與進度見 `docs/BDD-FEATURE-CATALOG.md`。
 
 ## 行為與實作原則
 

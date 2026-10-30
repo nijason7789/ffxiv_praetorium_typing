@@ -4,6 +4,13 @@ import { nextClozeBlank } from "../services/cloze-history";
 import { shuffle } from "./random";
 import { state } from "./state";
 import {
+  createScoringState,
+  resetTypingInput,
+  scoreTyping,
+  scoreCloze,
+  scoreRpg,
+} from "./scoring";
+import {
   PUNCT_SET,
   localizeZhTerm,
   normalizeForCompare,
@@ -15,6 +22,10 @@ import {
 import { element } from "../ui/dom";
 import type { ScriptLine, Language, Mode, Act } from "./types";
 let advanceTimer: ReturnType<typeof setTimeout> | undefined;
+
+function questionKey(item: ScriptLine) {
+  return `${state.lang}:${item.id}`;
+}
 
 function cancelPendingAdvance() {
   clearTimeout(advanceTimer);
@@ -85,15 +96,8 @@ export function startNewSession() {
   state.queue = getFilteredQueue();
   state.currentIndex = 0;
   state.startTime = null;
-  state.totalTypedChars = 0;
-  state.correctChars = 0;
-  state.errorCount = 0;
-  state.combo = 0;
-  state.maxCombo = 0;
-  state.score = 0;
-  state.lastMatchedLen = 0;
+  Object.assign(state, createScoringState());
   state.clozeAnswered = false;
-  state.rpgAnsweredForLine = {};
 
   element("stageCompleteModal").classList.add("hidden");
   updateLangUI();
@@ -235,7 +239,8 @@ export function renderCurrentStep() {
 
   // Interactive RPG Question (if present on L01 / L02)
   const rpgCard = element("rpgPromptCard");
-  if (item.rpgQuestion && !state.rpgAnsweredForLine[item.id]) {
+  const scoreKey = questionKey(item);
+  if (item.rpgQuestion && !state.scoreProgress[scoreKey]?.rpgRewarded) {
     const rq = item.rpgQuestion[state.lang] || item.rpgQuestion.zh;
     rpgCard.classList.remove("hidden");
     element("rpgPromptQuestion").textContent =
@@ -251,9 +256,9 @@ export function renderCurrentStep() {
         state.lang === "zh" ? localizeZhTerm(chLabel) : chLabel;
       btn.innerHTML = `<span>▶ ${displayLabel}</span><span class="text-[11px] text-amber-300/80">+150 pts</span>`;
       btn.addEventListener("click", () => {
-        state.rpgAnsweredForLine[item.id] = true;
-        state.score += 150;
-        state.combo += 2;
+        const next = scoreRpg(state, scoreKey);
+        if (next === state) return;
+        Object.assign(state, next);
         soundFX.playLineComplete();
         rpgCard.classList.add("hidden");
         updateStatsUI();
@@ -291,7 +296,7 @@ function renderStandardTypingStep(item: ScriptLine, targetText: string) {
   element("typingAssistChips").classList.toggle("hidden", !assistsEnabled);
   const inputEl = element("typingInput");
   inputEl.value = "";
-  state.lastMatchedLen = 0;
+  Object.assign(state, resetTypingInput(state, questionKey(item)));
   renderTargetCharacters("", targetText);
   renderQuickPhraseChips(targetText);
   focusGameInput(inputEl);
@@ -396,39 +401,26 @@ export function handleTypingProgress() {
     inputEl.value = effectiveInput;
   }
 
-  let currentMatchedPrefix = 0;
-  for (let i = 0; i < Math.min(normInput.length, normTarget.length); i++) {
-    if (normInput[i] === normTarget[i]) {
-      currentMatchedPrefix++;
-    } else {
-      break;
-    }
-  }
-
-  if (currentMatchedPrefix > state.lastMatchedLen) {
-    const delta = currentMatchedPrefix - state.lastMatchedLen;
-    state.correctChars += delta;
-    state.totalTypedChars += delta;
-    state.combo += delta;
-    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
-    const mult = 1 + Math.floor(state.combo / 10) * 0.2;
-    state.score += Math.round(delta * 25 * mult);
-    state.lastMatchedLen = currentMatchedPrefix;
-    soundFX.playKeyClick(state.combo >= 15);
-  } else if (
-    normInput.length > currentMatchedPrefix &&
-    normInput.length > state.lastMatchedLen
-  ) {
-    state.errorCount += 1;
-    state.combo = 0;
+  const previousErrors = state.errorCount;
+  const previousCorrect = state.correctChars;
+  Object.assign(
+    state,
+    scoreTyping(state, {
+      questionId: questionKey(item),
+      input: normInput,
+      target: normTarget,
+    }),
+  );
+  if (state.errorCount > previousErrors) {
     soundFX.playError();
+  } else if (state.correctChars > previousCorrect) {
+    soundFX.playKeyClick(state.combo >= 15);
   }
 
   updateStatsUI();
 
   if (allMatched) {
     soundFX.playLineComplete();
-    state.score += 100;
     advanceTimer = setTimeout(() => {
       state.currentIndex++;
       renderCurrentStep();
@@ -496,11 +488,14 @@ export function verifyClozeAnswer(userAnswerRaw: string) {
 
   if (normalizeForCompare(userClean) === normalizeForCompare(expected)) {
     state.clozeAnswered = true;
-    state.correctChars += expected.length;
-    state.combo += 3;
-    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
-    const mult = 1 + Math.floor(state.combo / 10) * 0.2;
-    state.score += Math.round(200 * mult);
+    Object.assign(
+      state,
+      scoreCloze(state, {
+        questionId: questionKey(item),
+        correct: true,
+        answerLength: expected.length,
+      }),
+    );
 
     if (slotEl) {
       slotEl.textContent = `【 ${expected} 】`;
@@ -520,8 +515,14 @@ export function verifyClozeAnswer(userAnswerRaw: string) {
       renderCurrentStep();
     }, 650);
   } else {
-    state.errorCount += 1;
-    state.combo = 0;
+    Object.assign(
+      state,
+      scoreCloze(state, {
+        questionId: questionKey(item),
+        correct: false,
+        answerLength: 0,
+      }),
+    );
     soundFX.playError();
     updateStatsUI();
 
