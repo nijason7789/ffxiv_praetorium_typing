@@ -27,7 +27,7 @@ export const PUNCT_SET = new Set([
 export function localizeZhTerm(str: string) {
   if (!str) return "";
   if (state.useAltTerm) {
-    return str.replace(/艾歐澤亞/g, "艾奧傑亞");
+    return str.replace(/艾奧傑亞/g, "艾歐澤亞");
   }
   return str;
 }
@@ -67,11 +67,11 @@ export function normalizePunctuation(str: string) {
   );
 }
 
-// Normalize variants (艾歐澤亞/艾奧傑亞, 乙太/以太, case-insensitive in English)
+// Normalize variants (艾奧傑亞/艾歐澤亞, 乙太/以太, case-insensitive in English)
 export function normalizeForCompare(str: string) {
   if (!str) return "";
   let out = normalizePunctuation(str)
-    .replace(/艾奧傑亞/g, "艾歐澤亞")
+    .replace(/艾歐澤亞/g, "艾奧傑亞")
     .replace(/以太/g, "乙太")
     .replace(/裡/g, "裏")
     .replace(/裏/g, "裡");

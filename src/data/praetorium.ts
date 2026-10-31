@@ -97,7 +97,7 @@ export const PRAETORIUM_SCRIPT: ScriptLine[] = [
     rpgQuestion: {
       zh: {
         prompt: "【過場互動】蓋烏斯問道：「冒險者，你是為了什麼而戰鬥的？」",
-        choices: ["為了自己", "為了同伴", "為了艾歐澤亞", "【保持沉默】"],
+        choices: ["為了自己", "為了同伴", "為了艾奧傑亞", "【保持沉默】"],
       },
       jp: {
         prompt:
@@ -134,12 +134,12 @@ export const PRAETORIUM_SCRIPT: ScriptLine[] = [
       jp: "ガイウス・ヴァン・バエサル",
       en: "Gaius van Baelsar",
     },
-    text: "那麼我倒想問，你認為，艾歐澤亞存在真實嗎？",
+    text: "那麼我倒想問，你認為，艾奧傑亞存在真實嗎？",
     jp: "ならば、聞こう……。このエオルゼアに、真実はあるのか？",
     en: "Hmph! How very glib. And do you believe in Eorzea?",
     rpgQuestion: {
       zh: {
-        prompt: "【過場互動】蓋烏斯追問：「你認為，艾歐澤亞存在真實嗎？」",
+        prompt: "【過場互動】蓋烏斯追問：「你認為，艾奧傑亞存在真實嗎？」",
         choices: ["存在", "不存在", "什麼意思？", "【繼續沉默】"],
       },
       jp: {
@@ -158,7 +158,7 @@ export const PRAETORIUM_SCRIPT: ScriptLine[] = [
       },
     },
     clozePool: {
-      zh: ["艾歐澤亞", "存在", "真實"],
+      zh: ["艾奧傑亞", "存在", "真實"],
       jp: ["エオルゼア", "真実", "聞こう"],
       en: ["glib", "believe", "Eorzea"],
     },
@@ -198,11 +198,11 @@ export const PRAETORIUM_SCRIPT: ScriptLine[] = [
       jp: "ガイウス・ヴァン・バエサル",
       en: "Gaius van Baelsar",
     },
-    text: "艾歐澤亞從上到下布滿了欺瞞，這裡真的存在真實嗎？",
+    text: "艾奧傑亞從上到下布滿了欺瞞，這裡真的存在真實嗎？",
     jp: "欺瞞に満ちたエオルゼアに、真実はあるのか。",
     en: "It is naught but a cobweb of lies. To believe in Eorzea is to believe in nothing.",
     clozePool: {
-      zh: ["艾歐澤亞", "欺瞞", "真實"],
+      zh: ["艾奧傑亞", "欺瞞", "真實"],
       jp: ["欺瞞", "エオルゼア", "真実"],
       en: ["cobweb", "lies", "nothing"],
     },
@@ -466,11 +466,11 @@ export const PRAETORIUM_SCRIPT: ScriptLine[] = [
       jp: "ガイウス・ヴァン・バエサル",
       en: "Gaius van Baelsar",
     },
-    text: "我會打倒你們這些所謂的「英雄」，讓世人見識到我的力量！足以統治艾歐澤亞的天命之人的力量！",
+    text: "我會打倒你們這些所謂的「英雄」，讓世人見識到我的力量！足以統治艾奧傑亞的天命之人的力量！",
     jp: "「英雄」と呼ばれる貴様たちを倒し、我が力を天下に示そうぞ！エオルゼアの真なる王としての力を！",
     en: "Come, champion of Eorzea, face me! Your defeat shall serve as proof of my readiness to rule!",
     clozePool: {
-      zh: ["英雄", "力量", "艾歐澤亞", "天命之人"],
+      zh: ["英雄", "力量", "艾奧傑亞", "天命之人"],
       jp: ["英雄", "天下", "エオルゼア", "真なる王"],
       en: ["champion", "defeat", "proof", "readiness to rule"],
     },
@@ -488,11 +488,11 @@ export const PRAETORIUM_SCRIPT: ScriptLine[] = [
       jp: "ガイウス・ヴァン・バエサル",
       en: "Gaius van Baelsar",
     },
-    text: "只有在我的鐵腕統治之下，艾歐澤亞才會獲得新生！",
+    text: "只有在我的鐵腕統治之下，艾奧傑亞才會獲得新生！",
     jp: "そして、エオルゼアは新生するのだ！力有る我が手によって！",
     en: "It is only right that I should take your realm. For none among you has the power to stop me!",
     clozePool: {
-      zh: ["鐵腕統治", "艾歐澤亞", "新生"],
+      zh: ["鐵腕統治", "艾奧傑亞", "新生"],
       jp: ["エオルゼア", "新生", "我が手"],
       en: ["realm", "power", "stop me"],
     },

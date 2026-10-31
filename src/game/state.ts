@@ -6,7 +6,7 @@ export const state: GameState = {
   difficulty: "experience",
   mode: "typing", // 'typing' | 'cloze' | 'exam' | 'script'
   actFilter: "all", // 'all' | 'act1' | 'act2' | 'act3'
-  useAltTerm: false, // false = 艾歐澤亞, true = 艾奧傑亞
+  useAltTerm: false, // false = 艾奧傑亞, true = 艾歐澤亞
   skipPunct: true,
   showSubtitles: true,
   queue: [],

@@ -30,8 +30,8 @@ describe("Feature: 全形半形標點容錯", () => {
   it("Given 英文及中文譯名, Then 保留既有大小寫與譯名容錯", () => {
     state.lang = "en";
     expect(normalizeForCompare("Fight！")).toBe(normalizeForCompare("fight!"));
-    expect(normalizeForCompare("艾奧傑亞的以太。堅持裡")).toBe(
-      normalizeForCompare("艾歐澤亞的乙太.堅持裏"),
+    expect(normalizeForCompare("艾歐澤亞的以太。堅持裡")).toBe(
+      normalizeForCompare("艾奧傑亞的乙太.堅持裏"),
     );
   });
   it("Given 自動略過標點啟用, Then 已手打的半形標點仍保留手動來源", () => {

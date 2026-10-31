@@ -71,12 +71,12 @@ export function initializeApp() {
       });
     });
 
-    // Terminology toggle (艾歐澤亞 / 艾奧傑亞)
+    // Terminology toggle (艾奧傑亞 / 艾歐澤亞)
     element("btnToggleTerm").addEventListener("click", () => {
       state.useAltTerm = !state.useAltTerm;
       element("termLabel").textContent = state.useAltTerm
-        ? "艾奧傑亞"
-        : "艾歐澤亞";
+        ? "艾歐澤亞"
+        : "艾奧傑亞";
       if (state.mode === "script") {
         renderScriptArchive();
       } else {

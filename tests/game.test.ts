@@ -106,8 +106,8 @@ describe("modular game integration", () => {
 
   it("preserves terminology and English case normalization", () => {
     state.lang = "zh";
-    expect(normalizeForCompare("艾奧傑亞的以太")).toBe(
-      normalizeForCompare("艾歐澤亞的乙太"),
+    expect(normalizeForCompare("艾歐澤亞的以太")).toBe(
+      normalizeForCompare("艾奧傑亞的乙太"),
     );
     state.lang = "en";
     expect(normalizeForCompare("Fight")).toBe("fight");

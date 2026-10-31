@@ -46,6 +46,31 @@ afterEach(() => {
 });
 
 describe("Feature: 正式零式／絕固定場次", () => {
+  it("Given 繁中預設譯名, When 切換譯名再切回, Then 艾奧傑亞與艾歐澤亞的顯示反向切換且不改寫題庫", async () => {
+    choose("Experience");
+    const { state } = await game();
+    expect(state.useAltTerm).toBe(false);
+    expect(node("termLabel").textContent).toBe("艾奧傑亞");
+    expect(node("rpgChoicesContainer").textContent).toContain("為了艾奧傑亞");
+    click("btnNextLine");
+    const original = state.queue[1].text;
+    expect(original).toContain("艾奧傑亞");
+    expect(node("typingTargetDisplay").textContent).toContain("艾奧傑亞");
+    click("btnToggleTerm");
+    expect(state.useAltTerm).toBe(true);
+    expect(node("termLabel").textContent).toBe("艾歐澤亞");
+    expect(node("typingTargetDisplay").textContent).toContain("艾歐澤亞");
+    expect(node("rpgPromptQuestion").textContent).toContain("艾歐澤亞");
+    expect(state.queue[1].text).toBe(original);
+    click("btnToggleTerm");
+    expect(state.useAltTerm).toBe(false);
+    expect(node("termLabel").textContent).toBe("艾奧傑亞");
+    expect(node("typingTargetDisplay").textContent).toContain("艾奧傑亞");
+    type(original.replaceAll("艾奧傑亞", "艾歐澤亞"));
+    expect(state.errorCount).toBe(0);
+    vi.advanceTimersByTime(180);
+    expect(state.currentIndex).toBe(2);
+  });
   it.each(
     (["Experience", "Challenge"] as const).flatMap((choice) =>
       (["Typing", "Cloze", "Exam"] as const).map((mode) => ({ choice, mode })),
@@ -280,7 +305,7 @@ describe("Feature: 正式零式／絕固定場次", () => {
         expect(state.queue[state.currentIndex].id).toBe(line.id);
         expect(node("typingTargetDisplay").textContent).toContain("＿");
         expect(node("typingTargetDisplay").textContent).not.toContain(
-          "艾歐澤亞",
+          "艾奧傑亞",
         );
         type(answer());
         vi.advanceTimersByTime(180);

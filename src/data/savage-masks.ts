@@ -1,7 +1,7 @@
 import type { Localized } from "../game/types";
 import type { MaskRule } from "../game/fixed-mask";
 
-export const FIXED_MASK_VERSION = "fixed-v4";
+export const FIXED_MASK_VERSION = "fixed-v5";
 
 const words = (...texts: string[]): MaskRule[] =>
   texts.map((text) => ({ text, occurrence: 0 }));
@@ -9,7 +9,7 @@ const words = (...texts: string[]): MaskRule[] =>
 /** Fixed editorial phrases for the complete script; independent of clozePool/history. */
 export const SAVAGE_MASKS: Record<string, Localized<readonly MaskRule[]>> = {
   L04: {
-    zh: words("艾歐澤亞", "欺瞞", "真實"),
+    zh: words("艾奧傑亞", "欺瞞", "真實"),
     jp: words("欺瞞", "真実"),
     en: words("cobweb", "lies", "Eorzea", "nothing"),
   },
@@ -59,12 +59,12 @@ export const SAVAGE_MASKS: Record<string, Localized<readonly MaskRule[]>> = {
     en: words("power", "civilization", "mendacity", "salvation"),
   },
   L16: {
-    zh: words("英雄", "艾歐澤亞", "天命之人"),
+    zh: words("英雄", "艾奧傑亞", "天命之人"),
     jp: words("英雄", "エオルゼア", "真なる王"),
     en: words("champion", "Eorzea", "defeat", "readiness"),
   },
   L17: {
-    zh: words("鐵腕統治", "艾歐澤亞", "新生"),
+    zh: words("鐵腕統治", "艾奧傑亞", "新生"),
     jp: words("エオルゼア", "新生", "力有る"),
     en: words("realm", "power"),
   },
@@ -103,7 +103,7 @@ export const SAVAGE_MASKS: Record<string, Localized<readonly MaskRule[]>> = {
   L02: {
     zh: [
       {
-        text: "艾歐澤亞",
+        text: "艾奧傑亞",
         occurrence: 0,
       },
       {
