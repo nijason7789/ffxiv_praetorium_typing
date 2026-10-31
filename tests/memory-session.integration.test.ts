@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mountPageFixture } from "./helpers/page";
+import { PRAETORIUM_SCRIPT } from "../src/data/praetorium";
 
 vi.mock("../src/services/bgm", () => ({
   initializeBgm: vi.fn(),
@@ -46,21 +47,19 @@ afterEach(() => {
 
 describe("Feature: 正式零式／絕固定場次", () => {
   it.each(["zh", "jp", "en"] as const)(
-    "Given %s, Then 兩種難度皆依序通過五句並鎖定結算",
+    "Given %s, Then 兩種難度皆依序通過完整四章題庫並鎖定結算",
     async (language) => {
       const { state, answer } = await game();
       state.lang = language;
       for (const difficulty of ["Savage", "Ultimate"] as const) {
         choose(difficulty);
-        expect(state.queue.map((line) => line.id)).toEqual([
-          "L01",
-          "L02",
-          "L03",
-          "L05",
-          "L07",
-        ]);
-        expect(node("stageStepCounter").textContent).toBe("(1 / 5)");
-        for (let index = 0; index < 5; index++) {
+        expect(state.queue.map((line) => line.id)).toEqual(
+          PRAETORIUM_SCRIPT.map((line) => line.id),
+        );
+        expect(new Set(state.queue.map((line) => line.act)).size).toBe(4);
+        const total = PRAETORIUM_SCRIPT.length;
+        expect(node("stageStepCounter").textContent).toBe(`(1 / ${total})`);
+        for (let index = 0; index < total; index++) {
           const mask = node("typingTargetDisplay").textContent;
           type(answer());
           expect(node("typingTargetDisplay").textContent).toBe(mask);
@@ -69,8 +68,8 @@ describe("Feature: 正式零式／絕固定場次", () => {
         }
         expect(state.result).toMatchObject({
           difficulty: difficulty.toLowerCase(),
-          total: 5,
-          completed: 5,
+          total,
+          completed: total,
           completionRate: 100,
           accuracy: 100,
           hasUsedAssistance: false,
@@ -185,16 +184,21 @@ describe("Feature: 正式零式／絕固定場次", () => {
     expect(node("typingTargetDisplay").textContent).toBe(mask);
   });
 
-  it("Given 中文替代譯名, Then L02 遮罩及完整台詞判定使用一致譯名", async () => {
+  it("Given 中文替代譯名, Then 完整題庫的遮罩及作答判定使用一致譯名", async () => {
     const { state, answer } = await game();
     state.useAltTerm = true;
-    choose("Ultimate");
-    type(answer());
-    vi.advanceTimersByTime(180);
-    expect(state.queue[state.currentIndex].id).toBe("L02");
-    expect(node("typingTargetDisplay").textContent).toContain("＿");
-    type(answer());
-    vi.advanceTimersByTime(180);
-    expect(state.currentIndex).toBe(2);
+    for (const difficulty of ["Savage", "Ultimate"] as const) {
+      choose(difficulty);
+      for (const line of PRAETORIUM_SCRIPT) {
+        expect(state.queue[state.currentIndex].id).toBe(line.id);
+        expect(node("typingTargetDisplay").textContent).toContain("＿");
+        expect(node("typingTargetDisplay").textContent).not.toContain(
+          "艾歐澤亞",
+        );
+        type(answer());
+        vi.advanceTimersByTime(180);
+      }
+      expect(state.result?.completed).toBe(PRAETORIUM_SCRIPT.length);
+    }
   });
 });

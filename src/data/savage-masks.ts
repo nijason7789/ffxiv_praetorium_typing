@@ -1,10 +1,111 @@
 import type { Localized } from "../game/types";
 import type { MaskRule } from "../game/fixed-mask";
 
-export const FIXED_MASK_VERSION = "prototype-v2";
+export const FIXED_MASK_VERSION = "fixed-v3";
 
-/** Editorial draft for five prototype lines; independent of clozePool/history. */
+const words = (...texts: string[]): MaskRule[] =>
+  texts.map((text) => ({ text, occurrence: 0 }));
+
+/** Fixed editorial phrases for the complete script; independent of clozePool/history. */
 export const SAVAGE_MASKS: Record<string, Localized<readonly MaskRule[]>> = {
+  L04: {
+    zh: words("艾歐澤亞", "欺瞞", "真實"),
+    jp: words("欺瞞", "真実"),
+    en: words("cobweb", "lies", "Eorzea", "nothing"),
+  },
+  L06: {
+    zh: words("十二神", "加爾提諾", "危難", "召喚"),
+    jp: words("エオルゼア十二神", "守護神", "カルテノー"),
+    en: words("Twelve", "protectors", "guardians", "Carteneau"),
+  },
+  L08: {
+    zh: words("十二神", "蠻神", "力量", "滅亡"),
+    jp: words("十二神", "蛮神", "滅ぶ"),
+    en: words("gods", "beasts", "eikons", "faith"),
+  },
+  L09: {
+    zh: words("真相", "愚蠢", "偽神", "路易索瓦"),
+    jp: words("真実", "愚かな民", "偽りの神", "ルイゾワ"),
+    en: words("masters", "false deities", "Louisoix"),
+  },
+  L10: {
+    zh: words("長者", "王", "執政", "軟弱無能"),
+    jp: words("長", "王", "為政者", "力無き弱者"),
+    en: words("masters", "strength"),
+  },
+  L11: {
+    zh: words("人世", "支配", "價值"),
+    jp: words("人の世", "支配", "存在価値"),
+    en: words("world", "anything", "own"),
+  },
+  L12: {
+    zh: words("鬥爭", "掠奪", "財富", "支配", "繁榮"),
+    jp: words("太古", "争い", "奪う", "支配"),
+    en: words("conflict", "rich", "conquest"),
+  },
+  L13: {
+    zh: words("鬥爭", "弱者", "強者", "未來"),
+    jp: words("争い", "強者", "弱者", "未来"),
+    en: words("battle", "strong", "fate", "weak"),
+  },
+  L14: {
+    zh: words("無能之人", "虛偽", "乾枯", "生靈"),
+    jp: words("力無き弱者", "偽りの神", "枯れ", "死に絶える"),
+    en: words("impotent ruler", "false worship", "enervation", "death"),
+  },
+  L15: {
+    zh: words("強者", "統治", "愚蠢", "謊言", "拯救"),
+    jp: words("力有る者", "支配", "欺瞞", "真実"),
+    en: words("power", "civilization", "mendacity", "salvation"),
+  },
+  L16: {
+    zh: words("英雄", "艾歐澤亞", "天命之人"),
+    jp: words("英雄", "エオルゼア", "真なる王"),
+    en: words("champion", "Eorzea", "defeat", "readiness"),
+  },
+  L17: {
+    zh: words("鐵腕統治", "艾歐澤亞", "新生"),
+    jp: words("エオルゼア", "新生", "力有る"),
+    en: words("realm", "power"),
+  },
+  L18: {
+    zh: words("統治者", "力量", "使用方法"),
+    jp: words("統べる者", "使い方", "無意味"),
+    en: words("fought", "strength", "wisdom"),
+  },
+  L19: {
+    zh: words("究極神兵", "力量"),
+    jp: words("使い方", "アルテマウェポン", "真の力"),
+    en: words("power", "might", "Ultima Weapon"),
+  },
+  L20: {
+    zh: words("核心", "黑蛇", "古亞拉戈帝國", "超級文明"),
+    jp: words("古代アラグ帝国", "超文明", "アルテマウェポン", "黒聖石サビク"),
+    en: words("core", "Heart of Sabik", "Allag"),
+  },
+  L21: {
+    zh: words("生命", "七重之門", "力量之塔"),
+    jp: words("生命", "七つ", "力の塔"),
+    en: words("seven hells", "heavens", "Ultima"),
+  },
+  L22: {
+    zh: words("威力", "究極神兵", "武器"),
+    jp: words("威力", "武器", "アルテマウェポン"),
+    en: words("devastation", "intention"),
+  },
+  L23: {
+    zh: [
+      { text: "懦弱的執政者", occurrence: 0 },
+      { text: "執政", occurrence: 1 },
+    ],
+    jp: words("弱き為政者"),
+    en: words("Weak rulers", "weak rulers"),
+  },
+  L24: {
+    zh: words("惡性循環", "真理"),
+    jp: words("流れ", "断ち切れぬ", "真理"),
+    en: words("strength", "cycle", "truth", "power"),
+  },
   L01: {
     zh: [
       {

@@ -5,6 +5,11 @@ import { ULTIMATE_MASKS } from "../src/data/ultimate-masks";
 import { PRAETORIUM_SCRIPT } from "../src/data/praetorium";
 
 describe("Feature: 固定難度遮罩", () => {
+  it("Given 完整台詞題庫, Then 三語零式與絕的設定涵蓋所有題目且無額外題號", () => {
+    const ids = PRAETORIUM_SCRIPT.map((line) => line.id).sort();
+    expect(Object.keys(SAVAGE_MASKS).sort()).toEqual(ids);
+    expect(Object.keys(ULTIMATE_MASKS).sort()).toEqual(ids);
+  });
   it("Given 多個指定詞, Then 每次產生相同遮罩並保留長度", () => {
     const rules = [
       { text: "什麼", occurrence: 0 },

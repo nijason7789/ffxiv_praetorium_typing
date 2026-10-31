@@ -2,8 +2,118 @@ import type { Localized } from "../game/types";
 import type { MaskRule } from "../game/fixed-mask";
 import { SAVAGE_MASKS } from "./savage-masks";
 
+const words = (...texts: string[]): MaskRule[] =>
+  texts.map((text) => ({ text, occurrence: 0 }));
+
 /** Additional fixed phrases; every ultimate mask also includes the savage rules. */
 const EXTRA_MASKS: Record<string, Localized<readonly MaskRule[]>> = {
+  L04: {
+    zh: words("從上到下", "真的"),
+    jp: words("満ちた"),
+    en: words("naught", "believe"),
+  },
+  L06: {
+    zh: words("信仰", "戰役"),
+    jp: words("仰ぐ", "呼び降ろす"),
+    en: words("engaged", "understand", "repeat"),
+  },
+  L08: {
+    zh: words("本質", "依靠"),
+    jp: words("気づいて", "頼れば"),
+    en: words("different", "bleeding"),
+  },
+  L09: {
+    zh: words("依賴", "睿智"),
+    jp: words("知って", "賢人"),
+    en: words("cling", "learning", "grovel"),
+  },
+  L10: {
+    zh: words("原因", "所有"),
+    jp: words("他ならん"),
+    en: words("otherwise"),
+  },
+  L11: {
+    zh: words("存在"),
+    jp: words("初めて"),
+    en: words("mean"),
+  },
+  L12: {
+    zh: words("自古以來", "磨練"),
+    jp: words("自己", "富み"),
+    en: words("raise", "grow"),
+  },
+  L13: {
+    zh: words("領導", "敗下陣來"),
+    jp: words("導く", "果て"),
+    en: words("settles", "dictate"),
+  },
+  L14: {
+    zh: words("領導", "召喚"),
+    jp: words("導く", "呼ばれ"),
+    en: words("Knowing", "leads"),
+  },
+  L15: {
+    zh: words("遵從", "別無他法"),
+    jp: words("愚かな民", "一点"),
+    en: words("steer", "truth"),
+  },
+  L16: {
+    zh: words("打倒", "統治"),
+    jp: words("倒し", "天下"),
+    en: words("face", "proof"),
+  },
+  L17: {
+    zh: words("只有", "獲得"),
+    jp: words("我が手"),
+    en: words("right", "stop"),
+  },
+  L18: {
+    zh: words("精彩", "領悟"),
+    jp: words("素晴らしい", "間違えば"),
+    en: words("rule", "wield"),
+  },
+  L19: {
+    zh: words("教你", "真正"),
+    jp: words("教えて", "見せて"),
+    en: words("teach", "Witness"),
+  },
+  L20: {
+    zh: words("研究", "皮毛"),
+    jp: words("表層", "解明"),
+    en: words("surface", "brilliant"),
+  },
+  L21: {
+    zh: words("渦旋流轉", "君臨"),
+    jp: words("渦なす", "開き"),
+    en: words("deepest", "tremble"),
+  },
+  L22: {
+    zh: words("強大", "體內"),
+    jp: words("このような"),
+    en: words("NOT", "my"),
+  },
+  L23: {
+    zh: [
+      { text: "愚昧", occurrence: 0 },
+      { text: "愚昧", occurrence: 1 },
+    ],
+    jp: [
+      { text: "愚民", occurrence: 0 },
+      { text: "愚民", occurrence: 1 },
+    ],
+    en: [
+      { text: "foolish", occurrence: 0 },
+      { text: "foolish", occurrence: 1 },
+    ],
+  },
+  L24: {
+    zh: [
+      { text: "強大的力量", occurrence: 0 },
+      { text: "強大的力量", occurrence: 1 },
+    ],
+    jp: words("力を持たねば", "理解"),
+    en: words("break", "see"),
+  },
   L01: {
     zh: [{ text: "你是為了", occurrence: 0 }],
     jp: [{ text: "うぬ", occurrence: 0 }],
