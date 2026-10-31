@@ -17,7 +17,7 @@
 - `src/data/praetorium.ts`：繁中、日文、英文台詞及各語言的填空詞、干擾選項。
 - `src/game/types.ts`、`state.ts`：領域型別與遊戲狀態。
 - `src/game/text.ts`：文字正規化、語言選取、標點略過。
-- `src/game/difficulty.ts`：四種難度名稱與記憶作答難度判斷；限制需同時涵蓋 UI 與事件入口。
+- `src/game/difficulty.ts`：四種難度名稱、題目呈現與唯讀功能權限設定；控制器、事件及文字處理共用 `getDifficultyRules()`，模式顯示與切換共用 `canSelectMode()`。限制需同時涵蓋 UI 與事件入口，避免在其他模組直接依難度名稱推斷權限。
 - `src/game/fixed-mask.ts`、`src/data/savage-masks.ts`、`src/data/ultimate-masks.ts`：純遮罩規則與完整 24 句三語固定設定；絕在零式規則上增加詞組，與既有 clozePool／抽題歷史分離。變更固定設定需更新出題版本及 `docs/FIXED-MASK-CATALOG.md` 的範例。
 - `src/ui/memory-prototype.ts`：以 `?prototype=memory` 進入的獨立單句原型，可選全部 24 句。正式選單已接入四種難度及完整場次，範圍見 `docs/FIXED-DIFFICULTY-DRAFT.md`。
 - `src/game/input-source.ts`：編輯前後的字元來源追蹤；自動標點及輔助字元的來源需跨後續輸入保留。

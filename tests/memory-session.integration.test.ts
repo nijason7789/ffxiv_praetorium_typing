@@ -46,6 +46,49 @@ afterEach(() => {
 });
 
 describe("Feature: 正式零式／絕固定場次", () => {
+  it.each([
+    { choice: "Experience", label: "體驗", assists: true, standard: true },
+    { choice: "Challenge", label: "普通", assists: false, standard: true },
+    { choice: "Savage", label: "零式", assists: false, standard: false },
+    { choice: "Ultimate", label: "絕", assists: false, standard: false },
+  ] as const)(
+    "Given $label, Then 畫面權限與操作限制一致，切換後恢復對應功能",
+    async ({ choice, label, assists, standard }) => {
+      choose("Ultimate");
+      choose(choice);
+      const { state } = await game();
+      expect(node("currentDifficultyBadge").textContent).toBe(label);
+      expect(node("btnAutoFillWord").classList.contains("hidden")).toBe(
+        !assists,
+      );
+      expect(node("typingAssistChips").classList.contains("hidden")).toBe(
+        !assists,
+      );
+      for (const id of [
+        "navModeCloze",
+        "navModeExam",
+        "navModeScript",
+        "btnPrevLine",
+        "btnNextLine",
+        "chapterSelectorBar",
+        "rpgPromptCard",
+        "subtitlesBox",
+      ]) {
+        expect(node(id).classList.contains("hidden")).toBe(!standard);
+      }
+      click("btnAutoFillWord");
+      expect(input().value.length > 0).toBe(assists);
+      click("navModeCloze");
+      expect(state.mode).toBe(standard ? "cloze" : "typing");
+      if (standard) {
+        expect(node("clozeOptionsGrid").childElementCount).toBeGreaterThan(0);
+        click("btnClozeHint");
+        expect(
+          (node("clozeInput") as HTMLInputElement).value.length,
+        ).toBeGreaterThan(0);
+      }
+    },
+  );
   it.each(["Savage", "Ultimate"] as const)(
     "Given %s, When 使用半形逗號問號作答, Then 不計錯且維持完整計分與換題",
     async (difficulty) => {

@@ -4,7 +4,7 @@ import { startNewSession, updateNavigationTabs } from "../game/app";
 import { startBgmOnLanguageSelection } from "../services/bgm";
 import { soundFX } from "../services/audio";
 import { element } from "./dom";
-import { difficultyLabels } from "../game/difficulty";
+import { getDifficultyRules } from "../game/difficulty";
 
 const languageLabels = { zh: "繁體中文", jp: "日本語", en: "English" };
 type SetupStep = "language" | "difficulty" | "game";
@@ -46,7 +46,7 @@ export function initializeSetup() {
     state.difficulty = difficulty;
     state.mode = "typing";
     element("currentDifficultyBadge").textContent =
-      difficultyLabels[difficulty];
+      getDifficultyRules(difficulty).label;
     updateNavigationTabs();
     startNewSession();
     showStep("game");

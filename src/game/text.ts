@@ -1,5 +1,5 @@
 import { state } from "./state";
-import { isMemoryDifficulty } from "./difficulty";
+import { getDifficultyRules } from "./difficulty";
 import type { ScriptLine } from "./types";
 import type { InputSource } from "./input-source";
 export const PUNCT_SET = new Set([
@@ -89,7 +89,7 @@ export function computeEffectiveInputWithSources(
   targetStr: string,
   rawSources: InputSource[] = Array(rawInput.length).fill("manual"),
 ) {
-  if (!state.skipPunct || isMemoryDifficulty(state.difficulty))
+  if (!state.skipPunct || !getDifficultyRules(state.difficulty).skipPunctuation)
     return { text: rawInput, sources: rawSources };
   const normInput = normalizeForCompare(rawInput);
   const normTarget = normalizeForCompare(targetStr);
