@@ -93,6 +93,8 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 
 ## BDD 功能盤點與測試規劃
 
+[排行榜 MVP 需求與 BDD 草稿](docs/BDD-LEADERBOARD-MVP.md) 記錄入榜與排序、開局取名的兩種命名格式、選填遊玩版本統計，以及結算後手動送出成績的決議；尚未實作，未決細節另列。
+
 [貼上與拖放限制 BDD 規格](docs/BDD-INPUT-RESTRICTIONS.md) 定義只有體驗允許貼上，普通／零式／絕禁止貼上與文字拖放，以及正常 IME、編輯、計分與手機操作的驗收情境。正式頁及單句原型已實作，裝置驗收進度見該文件。
 
 [功能盤點與 BDD 測試清單](docs/BDD-FEATURE-CATALOG.md) 列出功能的 Given／When／Then 情境、建議測試層級、現有覆蓋，以及經 27 題問答確認的 13 項產品決議。文件區分盤點時的程式現況與已確認但待實作的新預期，供後續補測與 refactor 使用。
