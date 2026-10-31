@@ -92,7 +92,7 @@ describe("Feature: 計分規則接回遊戲 [DEC-03, SCORE]", () => {
     expect(document.querySelector("#statCpm")!.textContent).toBe("40");
   });
 
-  it("[ASSIST-02] Given 挑戰模式, When 觸發補字操作, Then 不填入文字或標示輔助", async () => {
+  it("[ASSIST-02] Given 普通模式, When 觸發補字操作, Then 不填入文字或標示輔助", async () => {
     await bindEvents();
     state.difficulty = "challenge";
     game.renderCurrentStep();
@@ -105,7 +105,7 @@ describe("Feature: 計分規則接回遊戲 [DEC-03, SCORE]", () => {
     expect(state.hasUsedAssistance).toBe(false);
     game.finishStage();
     expect(document.querySelector("#finalAssistanceStatus")!.textContent).toBe(
-      "挑戰模式・未使用輔助",
+      "普通模式・未使用輔助",
     );
   });
 

@@ -147,7 +147,7 @@ describe("Feature: 正式零式／絕固定場次", () => {
     },
   );
 
-  it("Given 先前啟用略過標點與字幕, Then 高難度仍須完整標點，返回挑戰恢復設定", async () => {
+  it("Given 先前啟用略過標點與字幕, Then 高難度仍須完整標點，返回普通恢復設定", async () => {
     const { state, answer } = await game();
     state.skipPunct = true;
     state.showSubtitles = true;
