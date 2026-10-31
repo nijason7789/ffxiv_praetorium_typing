@@ -1,7 +1,7 @@
 import type { Localized } from "../game/types";
 import type { MaskRule } from "../game/fixed-mask";
 
-export const FIXED_MASK_VERSION = "prototype-v1";
+export const FIXED_MASK_VERSION = "prototype-v2";
 
 /** Editorial draft for five prototype lines; independent of clozePool/history. */
 export const SAVAGE_MASKS: Record<string, Localized<readonly MaskRule[]>> = {

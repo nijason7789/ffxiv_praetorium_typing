@@ -64,17 +64,20 @@ describe("Feature: 零式／絕單句原型", () => {
     expect(node("memoryIme").classList.contains("hidden")).toBe(true);
     expect(node("memoryTarget").textContent).toBe(mask);
   });
-  it("When 改成絕, Then 只顯示標點並要求完整標點作答", () => {
+  it("When 改成絕, Then 保留文字線索並要求完整標點作答", () => {
     const difficulty = node("memoryDifficulty") as HTMLSelectElement;
     difficulty.value = "ultimate";
     difficulty.dispatchEvent(new Event("change"));
     expect(node("memoryTarget").textContent).toBe(
-      "＿＿＿，＿＿＿＿＿＿＿＿＿＿？",
+      "冒險者，＿＿＿＿＿＿而＿＿的？",
     );
     click("memoryStart");
     type("冒險者你是為了什麼而戰鬥的");
     expect(node("memoryResult").textContent).toBe("");
     type("冒險者，你是為了什麼而戰鬥的？");
     expect(node("memoryResult").textContent).toContain("完成 1 / 1 題");
+    const mask = node("memoryTarget").textContent;
+    click("memoryRestart");
+    expect(node("memoryTarget").textContent).toBe(mask);
   });
 });

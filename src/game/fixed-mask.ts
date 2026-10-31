@@ -7,14 +7,8 @@ export type MemoryDifficulty = "savage" | "ultimate";
 /** One underscore per UTF-16 code unit, matching the game's current counting. */
 export function fixedMask(
   sentence: string,
-  difficulty: MemoryDifficulty,
   rules: readonly MaskRule[] = [],
 ): string {
-  if (difficulty === "ultimate")
-    return sentence
-      .split("")
-      .map((char) => (/\p{P}/u.test(char) ? char : "＿"))
-      .join("");
   if (!rules.length) throw new Error("No fixed mask rules");
   const covered = new Set<number>();
   for (const rule of rules) {

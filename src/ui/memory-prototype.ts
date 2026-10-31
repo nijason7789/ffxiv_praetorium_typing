@@ -1,7 +1,8 @@
 import template from "./components/memory-prototype.html?raw";
 import { PRAETORIUM_SCRIPT } from "../data/praetorium";
 import { SAVAGE_MASKS } from "../data/savage-masks";
-import { fixedMask, type MemoryDifficulty } from "../game/fixed-mask";
+import { ULTIMATE_MASKS } from "../data/ultimate-masks";
+import { fixedMask } from "../game/fixed-mask";
 import { createScoringState, scoreTyping } from "../game/scoring";
 import {
   calculateStats,
@@ -60,8 +61,9 @@ export function mountMemoryPrototype() {
       "・第 1 / 1 題";
     element("memoryTarget").textContent = fixedMask(
       target,
-      difficulty.value as MemoryDifficulty,
-      SAVAGE_MASKS[line.id][state.lang],
+      (difficulty.value === "ultimate" ? ULTIMATE_MASKS : SAVAGE_MASKS)[
+        line.id
+      ][state.lang],
     );
     element("memoryResult").textContent = "";
     update();
