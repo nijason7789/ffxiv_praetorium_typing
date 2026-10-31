@@ -4,6 +4,14 @@
 
 題庫範圍為天幕魔導城第一至第三幕（L01～L17）；第四幕的究極神兵段落不收錄。
 
+## 測試版提示
+
+語言選擇頁與遊戲頁首保留「測試版」標籤，可展開或關閉說明。首次開啟時只在語言選擇頁自動顯示，不要求先關閉才能開始遊戲，也不暫停或重設作答。
+
+文案集中於 `src/data/beta-notice.ts` 的 `BETA_NOTICE`：修改 `title`、`message`、`badge`、`dismiss` 即可更新文字；需要已讀玩家再次看到公告時，更新 `version`。關閉後以 `localStorage` 的 `ffxiv-praetorium:beta-notice` 記錄已讀版本。儲存不可用時仍能關閉及遊玩，但下次載入可能再次顯示。此提示目前套用於正式入口，不包含獨立單句原型。
+
+結算畫面另有蓋烏斯語氣的測試版感謝與回饋區，不受公告已讀狀態影響；回饋表單以新分頁開啟。其標題、說明、連結文字與網址分別由同一設定檔的 `resultTitle`、`resultMessage`、`feedbackLabel`、`feedbackUrl` 管理，不會自動提交成績或回饋。
+
 ## 開發
 
 需要 Node.js 22.12+ 或 24+。
@@ -79,7 +87,7 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 
 調整版面時修改對應的 `src/ui/components/*.html`。模板透過 Vite `?raw` 匯入，不需額外請求或 HTML 插件；外層 `page.html` 組合主要區塊，`game-stage.html` 再組合打字／填空／結算。圖片與音樂使用 `data-public-src` 記錄 public 內的相對路徑，組裝時補上部署前綴。
 
-組裝只發生在啟動時，換題沿用既有 DOM、BGM 元素與事件。整合測試共用 `tests/helpers/page.ts` 載入正式模板，涵蓋組裝、部署路徑及初始化情境；目前共 361 項測試。
+組裝只發生在啟動時，換題沿用既有 DOM、BGM 元素與事件。整合測試共用 `tests/helpers/page.ts` 載入正式模板，涵蓋組裝、部署路徑及初始化情境；目前共 369 項測試。
 
 `npm test` 使用模擬 DOM 驗證語言切換、打字換題、填空、模式切換、全文練習入口及 BGM 控制；真實瀏覽器的輸入法和音訊解碼、播放需另行驗證。
 

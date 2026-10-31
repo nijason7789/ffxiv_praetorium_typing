@@ -3,6 +3,17 @@ import { element } from "./dom";
 // Static IDs used across setup, gameplay, results, music and copy feedback.
 // clozeSlotVisual is generated per question and checked when accessed.
 const requiredIds = [
+  "btnBetaSetupNotice",
+  "betaSetupNotice",
+  "betaSetupTitle",
+  "btnDismissBetaSetup",
+  "btnBetaGameNotice",
+  "betaGameNotice",
+  "betaGameTitle",
+  "btnDismissBetaGame",
+  "betaResultNotice",
+  "betaResultTitle",
+  "betaFeedbackLink",
   "bgmAudio",
   "bgmEngineStatus",
   "bgmStatusDot",

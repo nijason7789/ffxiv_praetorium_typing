@@ -35,6 +35,39 @@
       </div>
     </div>
 
+    <div class="space-y-2">
+      <button
+        id="btnBetaSetupNotice"
+        type="button"
+        aria-expanded="false"
+        aria-controls="betaSetupNotice"
+        class="rounded border border-amber-500/60 bg-amber-950 px-2 py-1 text-xs font-bold text-amber-200"
+        data-beta-copy="badge"
+      >
+        測試版
+      </button>
+      <section
+        id="betaSetupNotice"
+        aria-labelledby="betaSetupTitle"
+        class="hidden rounded-lg border border-amber-500/40 bg-amber-950/50 p-3 space-y-2"
+      >
+        <h3
+          id="betaSetupTitle"
+          class="text-sm font-bold text-amber-200"
+          data-beta-copy="title"
+        ></h3>
+        <p
+          class="text-xs sm:text-sm leading-relaxed text-slate-300"
+          data-beta-copy="message"
+        ></p>
+        <button
+          id="btnDismissBetaSetup"
+          type="button"
+          class="rounded border border-amber-500/50 px-3 py-1 text-xs text-amber-100 hover:bg-amber-500/20"
+          data-beta-copy="dismiss"
+        ></button>
+      </section>
+    </div>
     <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
       歡迎來到蓋烏斯·范·巴埃薩軍團長的「天幕魔導城升降機必修課」。請選擇欲練習的語言版本以載入對應語言的「一般打字」與「隨機台詞填空」題庫（背景
       BGM 將於選擇版本後開始播放，可隨時暫停）：

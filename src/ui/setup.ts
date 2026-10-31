@@ -88,7 +88,11 @@ export function initializeSetup() {
   for (const id of ["langSelectModal", "difficultySelectModal"]) {
     element(id).addEventListener("keydown", (event) => {
       if (event.key !== "Tab") return;
-      const buttons = element(id).querySelectorAll<HTMLButtonElement>("button");
+      const buttons = [
+        ...element(id).querySelectorAll<HTMLButtonElement>("button"),
+      ].filter(
+        (button) => !button.disabled && !button.closest(".hidden, [hidden]"),
+      );
       const first = buttons[0];
       const last = buttons[buttons.length - 1];
       if (event.shiftKey && document.activeElement === first) {

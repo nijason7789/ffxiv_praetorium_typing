@@ -12,7 +12,17 @@
         <span class="text-amber-300 font-serif-tc font-black text-lg">XIV</span>
       </div>
       <div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            id="btnBetaGameNotice"
+            type="button"
+            aria-expanded="false"
+            aria-controls="betaGameNotice"
+            class="rounded border border-amber-500/60 bg-amber-950 px-2 py-1 text-xs font-bold text-amber-200"
+            data-beta-copy="badge"
+          >
+            測試版
+          </button>
           <span
             class="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-red-950/90 text-red-300 border border-red-700/50"
             >Lv.50 主線隨堂考</span
@@ -30,6 +40,27 @@
       </div>
     </div>
 
+    <section
+      id="betaGameNotice"
+      aria-labelledby="betaGameTitle"
+      class="hidden w-full rounded-lg border border-amber-500/40 bg-amber-950/50 p-3 space-y-2"
+    >
+      <h2
+        id="betaGameTitle"
+        class="text-sm font-bold text-amber-200"
+        data-beta-copy="title"
+      ></h2>
+      <p
+        class="text-xs sm:text-sm leading-relaxed text-slate-300"
+        data-beta-copy="message"
+      ></p>
+      <button
+        id="btnDismissBetaGame"
+        type="button"
+        class="rounded border border-amber-500/50 px-3 py-1 text-xs text-amber-100 hover:bg-amber-500/20"
+        data-beta-copy="dismiss"
+      ></button>
+    </section>
     <!-- Mode Switch Tabs & Quick Controls -->
     <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
       <button

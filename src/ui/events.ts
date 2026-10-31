@@ -19,6 +19,7 @@ import { initializeBgm, setBgmVolume, toggleBgm } from "../services/bgm";
 import { element } from "./dom";
 import type { Act } from "../game/types";
 import { initializeSetup } from "./setup";
+import { initializeBetaNotice } from "./beta-notice";
 import { bindIme } from "./ime";
 import { bindInputRestrictions } from "./input-restrictions";
 import { copyWithFeedback } from "./copy-feedback";
@@ -33,6 +34,7 @@ export function initializeApp() {
     assertRequiredElements();
     initialized = true;
     initializeBgm();
+    initializeBetaNotice();
     initializeSetup();
 
     element("btnToggleBgm").addEventListener("click", () => {
