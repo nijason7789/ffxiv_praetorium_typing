@@ -22,10 +22,14 @@ import { bindIme } from "./ime";
 import { copyWithFeedback } from "./copy-feedback";
 import { assertRequiredElements } from "./required-elements";
 import { installPageErrorBoundary, runPageAction } from "./page-error";
-installPageErrorBoundary();
-window.addEventListener("DOMContentLoaded", () => {
+let initialized = false;
+
+export function initializeApp() {
+  installPageErrorBoundary();
   runPageAction(() => {
+    if (initialized) return;
     assertRequiredElements();
+    initialized = true;
     initializeBgm();
     initializeSetup();
 
@@ -230,4 +234,4 @@ window.addEventListener("DOMContentLoaded", () => {
     // Initialize initial view behind the language selection modal
     startNewSession();
   });
-});
+}

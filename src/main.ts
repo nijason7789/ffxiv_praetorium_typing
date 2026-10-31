@@ -1,3 +1,5 @@
 import "./styles/tailwind.css";
 import "./styles/theme.css";
-import "./ui/events";
+import { bootstrap } from "./ui/bootstrap";
+
+bootstrap();

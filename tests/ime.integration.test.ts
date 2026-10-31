@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { readFileSync } from "node:fs";
+import { mountPageFixture } from "./helpers/page";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState, ScriptLine } from "../src/game/types";
 
@@ -44,22 +44,12 @@ beforeEach(async () => {
   vi.resetModules();
   vi.useFakeTimers();
   vi.setSystemTime(0);
-  document.body.innerHTML = readFileSync("index.html", "utf8")
-    .match(/<body[^>]*>([\s\S]*)<\/body>/)![1]
-    .replace(/<script[\s\S]*?<\/script>/g, "");
+  mountPageFixture();
   (await import("../src/services/audio")).soundFX.enabled = false;
   state = (await import("../src/game/state")).state;
   game = await import("../src/game/app");
-  let initialize = () => {};
-  const spy = vi
-    .spyOn(window, "addEventListener")
-    .mockImplementation((type, listener) => {
-      if (type === "DOMContentLoaded" && typeof listener === "function")
-        initialize = () => listener.call(window, new Event(type));
-    });
-  await import("../src/ui/events");
-  spy.mockRestore();
-  initialize();
+  const { initializeApp } = await import("../src/ui/events");
+  initializeApp();
   state.lang = "zh";
   state.mode = "cloze";
   game.startNewSession([line("one"), line("two")]);

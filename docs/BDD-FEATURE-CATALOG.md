@@ -708,3 +708,22 @@ Browser 驗證：headless Chromium 在載入前模擬缺少 typingInput，確認
 範圍限制：本批處理 JavaScript 已啟動後的必要 DOM 缺失，不是網路斷線、模組載入失敗或所有未知程式錯誤的通用攔截。保留既有型別宣告行為，不新增 tag 型別驗證；動態 clozeSlotVisual 由存取時檢查，不列入靜態啟動清單。新增靜態元件依賴時需同步更新 `src/ui/required-elements.ts`。
 
 DEC-10 的已確認復原流程已完成。下一步可核對其餘 BDD 情境的覆蓋缺口，再進行純重構；實際中日文 IME 與音效聽感仍待人工驗收。
+
+## 16. 頁面重構：拆分靜態模板
+
+本輪將原 `index.html` 的約 1,090 行拆成 10 個區塊模板，入口縮為 23 行；不改變先前確認的遊戲規則、畫面 ID 或 DOM 層級。主要檔案如下：
+
+| 位置 | 責任 |
+| --- | --- |
+| `src/ui/components/page.html` | 頁面外層版型與共用複製提示 |
+| `setup.html`、`header.html`、`dashboard.html` | 語言／難度選擇、導覽／BGM 與場景／統計 |
+| `game-stage.html`、`typing-panel.html`、`cloze-panel.html`、`results.html` | 遊戲舞台、打字、填空與結算 |
+| `archive.html`、`footer.html` | 全文與巨集、署名及版權 |
+| `src/ui/page.ts`、`bootstrap.ts` | 組裝可信的本機模板、設定素材部署路徑，再呼叫事件初始化 |
+| `tests/helpers/page.ts` | 整合測試共用正式組裝器，取代各自讀取 index.html 與攔截 DOMContentLoaded |
+
+新增 6 項組裝／啟動測試，原有 192 項測試全部保留通過，目前合計 198 項。根路徑及 Pages 子路徑正式建置均通過型別檢查與 Vite 建置。Vite 原有 Tailwind 掃描範圍已包含 `src/**/*.html`，不新增依賴或前端框架。
+
+Browser 驗證：Chromium 跑過三語 × 手機／桌面共 6 條流程，包含語言／難度、打字換題、全文選句、單題填空結算與成績複製；圖片與本機 BGM 在 `/ffxiv_praetorium_typing/` 下均可載入，無本機 404 或頁面執行錯誤。另確認開發伺服器根路徑可用，手機長句組字提示維持輸入欄上方且不造成位移或水平溢出。
+
+額外以重構前 HTML 比對組裝後的元素、屬性及文字，忽略排版空白、註解及入口腳本後 DOM 結構一致。未重新驗證作業系統真實輸入法或遠端部署；`src/game/app.ts` 的控制與動態渲染留待下一輪獨立重構。

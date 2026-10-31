@@ -1,0 +1,205 @@
+<section class="ff-window rounded-xl overflow-hidden relative">
+  <div class="grid grid-cols-1 lg:grid-cols-12">
+    <!-- Left/Top Visual Cutscene Viewport -->
+    <div
+      class="lg:col-span-5 relative min-h-[200px] sm:min-h-[240px] bg-black flex flex-col justify-between overflow-hidden"
+    >
+      <img
+        data-public-src="images/scene-1.jpg"
+        alt="天幕魔導城 蓋烏斯·范·巴埃薩與究極神兵"
+        class="absolute inset-0 w-full h-full object-cover opacity-80 max-w-full"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-[#0b0d13] via-[#0b0d13]/35 to-transparent"
+      ></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#12151e] hidden lg:block"
+      ></div>
+
+      <!-- Cutscene Top Overlay -->
+      <div class="relative z-10 p-3.5 flex items-center justify-between">
+        <div
+          class="flex items-center gap-2 bg-black/75 backdrop-blur-sm px-2.5 py-1 rounded border border-amber-500/40"
+        >
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+          <span class="text-[11px] font-semibold text-amber-200 tracking-wider"
+            >CUTSCENE PLAYING • 無法跳過動畫</span
+          >
+        </div>
+        <span
+          id="stageBadge"
+          class="text-xs font-bold px-2.5 py-0.5 rounded bg-amber-950/90 text-amber-300 border border-amber-500/40"
+        >
+          魔導城升降機
+        </span>
+      </div>
+
+      <!-- Elevator & Ultima Weapon Gauge Overlay -->
+      <div class="relative z-10 p-3.5 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-300 font-medium flex items-center gap-1.5">
+            <span>🛗 升降機下降進度</span>
+            <span id="stageStepCounter" class="text-amber-300 font-bold"
+              >(1 / 24)</span
+            >
+          </span>
+          <span id="ultimaChargeText" class="text-sky-300 font-semibold"
+            >究極神兵共鳴率：0%</span
+          >
+        </div>
+        <div
+          class="w-full h-2.5 bg-slate-900/90 rounded-full overflow-hidden border border-amber-500/30 p-0.5"
+        >
+          <div
+            id="stageProgressBar"
+            class="h-full bg-gradient-to-r from-amber-600 via-amber-400 to-sky-400 rounded-full transition-all duration-300"
+            style="width: 0%"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right/Bottom Status & Stats Dashboard -->
+    <div
+      class="lg:col-span-7 p-4 sm:p-5 flex flex-col justify-between gap-4 bg-gradient-to-b from-[#161924]/90 to-[#0e1017]/95"
+    >
+      <!-- Act / Chapter Selector Row -->
+      <div
+        id="chapterSelectorBar"
+        class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800"
+      >
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-xs text-slate-400 font-medium mr-1"
+            >章節選擇：</span
+          >
+          <button
+            type="button"
+            data-act="all"
+            class="act-btn px-2.5 py-1 rounded text-xs font-semibold bg-amber-500/25 text-amber-200 border border-amber-400/60"
+          >
+            全劇本連播
+          </button>
+          <button
+            type="button"
+            data-act="act1"
+            class="act-btn px-2.5 py-1 rounded text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-amber-500/40"
+          >
+            一、升降機質問
+          </button>
+          <button
+            type="button"
+            data-act="act2"
+            class="act-btn px-2.5 py-1 rounded text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-amber-500/40"
+          >
+            二、偽神與十二神
+          </button>
+          <button
+            type="button"
+            data-act="act3"
+            class="act-btn px-2.5 py-1 rounded text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-amber-500/40"
+          >
+            三、強者支配論
+          </button>
+          <button
+            type="button"
+            data-act="act4"
+            class="act-btn px-2.5 py-1 rounded text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-amber-500/40"
+          >
+            四、黑蛇聖石與究極
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-time Telemetry Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5">
+          <div class="text-[11px] text-slate-400">打字速度 (CPM)</div>
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span
+              id="statCpm"
+              class="text-xl sm:text-2xl font-black text-amber-300"
+              >0</span
+            >
+            <span id="statCpmUnit" class="text-[11px] text-slate-400"
+              >字/分</span
+            >
+          </div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5">
+          <div class="text-[11px] text-slate-400">精準度 (Accuracy)</div>
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span
+              id="statAcc"
+              class="text-xl sm:text-2xl font-black text-emerald-400"
+              >100</span
+            >
+            <span id="statAccUnit" class="text-[11px] text-slate-400">%</span>
+          </div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5">
+          <div class="text-[11px] text-slate-400">超越之力連擊 (Combo)</div>
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span
+              id="statCombo"
+              class="text-xl sm:text-2xl font-black text-sky-400"
+              >0</span
+            >
+            <span id="statEchoTier" class="text-[11px] text-sky-300/80"
+              >x1.0</span
+            >
+          </div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5">
+          <div class="text-[11px] text-slate-400">帝國功績總分</div>
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span
+              id="statScore"
+              class="text-xl sm:text-2xl font-black text-amber-200"
+              >0</span
+            >
+            <span class="text-[11px] text-slate-400">pts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Helper Settings Row -->
+      <div
+        class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs"
+      >
+        <div class="flex flex-wrap items-center gap-3">
+          <label
+            class="inline-flex items-center gap-1.5 cursor-pointer select-none text-slate-300 hover:text-amber-200"
+          >
+            <input
+              id="chkSkipPunct"
+              type="checkbox"
+              checked
+              class="rounded border-slate-600 text-amber-500 focus:ring-amber-500 bg-slate-900"
+            />
+            <span>自動跳過標點符號（推薦開啟）</span>
+          </label>
+          <label
+            class="inline-flex items-center gap-1.5 cursor-pointer select-none text-slate-300 hover:text-amber-200"
+          >
+            <input
+              id="chkShowJp"
+              type="checkbox"
+              checked
+              class="rounded border-slate-600 text-amber-500 focus:ring-amber-500 bg-slate-900"
+            />
+            <span>顯示跨語系對照字幕</span>
+          </label>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            id="btnRestartStage"
+            type="button"
+            class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 transition"
+          >
+            ↻ 重置本關
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

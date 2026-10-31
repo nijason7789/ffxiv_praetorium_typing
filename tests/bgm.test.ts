@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { readFileSync } from "node:fs";
+import { mountPageFixture } from "./helpers/page";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { element } from "../src/ui/dom";
 
@@ -10,10 +10,7 @@ let paused: boolean;
 beforeEach(async () => {
   vi.resetModules();
   vi.useFakeTimers();
-  const html = readFileSync("index.html", "utf8");
-  document.body.innerHTML = html
-    .match(/<body[^>]*>([\s\S]*)<\/body>/)![1]
-    .replace(/<script[\s\S]*?<\/script>/g, "");
+  mountPageFixture();
   audio = element("bgmAudio");
   paused = true;
   Object.defineProperty(audio, "paused", {

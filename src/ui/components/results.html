@@ -1,0 +1,75 @@
+<div
+  id="stageCompleteModal"
+  class="hidden ff-window rounded-xl p-5 sm:p-6 border-2 border-amber-400"
+>
+  <div
+    class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-800"
+  >
+    <div>
+      <span
+        class="text-xs font-bold uppercase tracking-widest px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40"
+      >
+        DUTY COMPLETE • 天幕魔導城隨堂考結算
+      </span>
+      <h2
+        id="resultRankTitle"
+        class="text-2xl sm:text-3xl font-serif-tc font-black text-amber-200 mt-2"
+      >
+        S+ 級：加雷馬第XIV軍團首席傳講官
+      </h2>
+      <p id="resultRankQuote" class="text-sm text-slate-300 mt-1">
+        「實在太精彩了，冒險者。你擁有足以成為統治者的打字力量！」
+      </p>
+      <p id="finalAssistanceStatus" class="text-sm text-amber-200 mt-2"></p>
+      <p class="text-sm text-slate-300 mt-1">
+        完成率：<span id="finalCompletionVal">0 / 0 題（0%）</span>
+      </p>
+    </div>
+    <div class="flex items-center gap-2 self-end md:self-center">
+      <button
+        id="btnCopyReport"
+        type="button"
+        class="ff-btn-gold px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold"
+      >
+        📋 複製成績單與蓋老師語錄
+      </button>
+      <button
+        id="btnPlayAgain"
+        type="button"
+        class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition"
+      >
+        ↻ 再上一堂必修課
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+    <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+      <div class="text-xs text-slate-400">最終得分</div>
+      <div id="finalScoreVal" class="text-2xl font-black text-amber-300 mt-0.5">
+        0
+      </div>
+    </div>
+    <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+      <div class="text-xs text-slate-400">平均字速 (CPM)</div>
+      <div id="finalCpmVal" class="text-2xl font-black text-sky-300 mt-0.5">
+        0
+      </div>
+    </div>
+    <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+      <div class="text-xs text-slate-400">整體精準度</div>
+      <div id="finalAccVal" class="text-2xl font-black text-emerald-400 mt-0.5">
+        100%
+      </div>
+    </div>
+    <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+      <div class="text-xs text-slate-400">最高超越連擊</div>
+      <div
+        id="finalMaxComboVal"
+        class="text-2xl font-black text-purple-300 mt-0.5"
+      >
+        0
+      </div>
+    </div>
+  </div>
+</div>

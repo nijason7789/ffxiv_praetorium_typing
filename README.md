@@ -34,7 +34,7 @@ Workflow 位於 `.github/workflows/deploy-pages.yml`，採用 GitHub 官方 Page
 
 每次推送 `main` 都會依序執行 `npm ci`、測試、型別檢查與正式建置，成功後才部署 `dist/`。部署狀態與實際網址可在 Actions 的 `github-pages` environment 查看。
 
-Workflow 會從 Pages 設定取得部署的 `base_path`，傳給 Vite `--base`，讓 JS、CSS、圖片及 BGM 都能在 `/ffxiv_praetorium_typing/` 下正確載入；本機開發仍使用原本根路徑。
+Workflow 會從 Pages 設定取得部署的 `base_path`，傳給 Vite `--base`；Vite 處理 JS／CSS 路徑，頁面組裝器依 `import.meta.env.BASE_URL` 處理圖片及 BGM，讓資源都能在 `/ffxiv_praetorium_typing/` 下正確載入。本機開發使用根路徑。
 
 本機模擬目前的 Pages 部署路徑：
 
@@ -47,8 +47,11 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 
 ## 結構
 
-- `index.html`：頁面結構，保留現有樣式與元素 ID。
-- `src/main.ts`：程式入口與樣式載入。
+- `index.html`：文件資訊、body 樣式與頁面掛載點。
+- `src/main.ts`：載入樣式並啟動頁面。
+- `src/ui/bootstrap.ts`：先組裝頁面，再初始化遊戲與事件。
+- `src/ui/page.ts`：組合靜態 HTML 模板，處理圖片／BGM 的部署路徑。
+- `src/ui/components/`：版型、語言／難度選擇、頁首、儀表板、遊戲舞台、打字、填空、結算、全文與 Footer。
 - `src/data/praetorium.ts`：三語台詞、挖空詞及干擾選項。
 - `src/game/types.ts`：語言、模式、題目及遊戲狀態型別。
 - `src/game/state.ts`：目前遊戲狀態。
@@ -57,7 +60,7 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 - `src/game/scoring.ts`：不依賴 DOM 的逐字倍率、錯誤紀錄與同局獎勵防重規則。
 - `src/game/input-source.ts`：文字編輯前後的手動、輔助及自動標點來源追蹤。
 - `src/game/statistics.ts`：不依賴 DOM 的打字計時、CPM、精準度、完成率與評級規則。
-- `src/ui/events.ts`：操作事件綁定。
+- `src/ui/events.ts`：由 `initializeApp()` 明確綁定操作事件。
 - `src/ui/ime.ts`：打字／填空組字保護及選字 Enter 防誤送。
 - `src/ui/copy-feedback.ts`：成績單、全文與巨集共用的複製提示。
 - `src/ui/setup.ts`：語言與難度選擇流程。
@@ -71,6 +74,10 @@ npm run preview -- --base=/ffxiv_praetorium_typing/
 - `public/audio/`：背景音樂檔案。
 
 原始 `ffxiv_praetorium_typing.html` 保留作為遷移對照，不是 Vite 程式入口。
+
+調整版面時修改對應的 `src/ui/components/*.html`。模板透過 Vite `?raw` 匯入，不需額外請求或 HTML 插件；外層 `page.html` 組合主要區塊，`game-stage.html` 再組合打字／填空／結算。圖片與音樂使用 `data-public-src` 記錄 public 內的相對路徑，組裝時補上部署前綴。
+
+組裝只發生在啟動時，換題沿用既有 DOM、BGM 元素與事件。整合測試共用 `tests/helpers/page.ts` 載入正式模板；目前共 198 項測試，包含 6 項組裝、部署路徑及初始化情境。這輪重構保留原有遊戲規則與畫面 ID，未拆分 `src/game/app.ts` 的控制／渲染流程。
 
 `npm test` 使用模擬 DOM 驗證語言切換、打字換題、填空、模式切換、全文練習入口及 BGM 控制；真實瀏覽器的輸入法和音訊解碼、播放需另行驗證。
 

@@ -1,0 +1,69 @@
+<div id="panelClozeMode" class="hidden space-y-4">
+  <!-- Sentence with Visual Blank Slot -->
+  <div
+    class="p-4 sm:p-5 rounded-xl bg-[#07090e]/95 border border-amber-500/30 min-h-[104px] flex flex-col justify-center space-y-2"
+  >
+    <div
+      id="clozeSentenceDisplay"
+      class="text-lg sm:text-2xl font-serif-tc font-bold leading-relaxed tracking-wider text-slate-100"
+    ></div>
+    <div
+      id="clozeFeedbackBanner"
+      class="hidden text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-md"
+    ></div>
+  </div>
+
+  <!-- Direct Typing Input + Submit + Reroll Blank Buttons -->
+  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+    <div class="relative flex-1">
+      <input
+        id="clozeInput"
+        type="text"
+        autocomplete="off"
+        placeholder="輸入空格中的關鍵台詞後按 Enter，或直接點擊下方隨機魔導詞庫..."
+        class="w-full px-4 py-3 rounded-lg bg-slate-900/95 border-2 border-amber-500/50 focus:border-amber-400 focus:outline-none text-base sm:text-lg text-amber-100 placeholder-slate-500"
+      />
+    </div>
+    <button
+      id="btnSubmitCloze"
+      type="button"
+      class="ff-btn-gold px-4 py-3 rounded-lg text-xs sm:text-sm font-bold shrink-0"
+    >
+      ✔ 確認填空 (Enter)
+    </button>
+    <button
+      id="btnRerollCloze"
+      type="button"
+      title="在同一句台詞中隨機切換不同的挖空位置與選項"
+      class="px-3.5 py-3 rounded-lg text-xs sm:text-sm font-semibold bg-amber-950/80 hover:bg-amber-900/80 text-amber-200 border border-amber-500/50 shrink-0"
+    >
+      🎲 隨機換挖空詞
+    </button>
+    <button
+      id="btnClozeHint"
+      type="button"
+      class="px-3.5 py-3 rounded-lg text-xs sm:text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-amber-200 border border-slate-600 shrink-0"
+    >
+      💡 提示首字
+    </button>
+  </div>
+
+  <!-- 4 Multiple-Choice / Word Bank Chips -->
+  <div class="space-y-1.5">
+    <div
+      class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400"
+    >
+      <span
+        >🎯
+        隨機魔導記憶詞庫（每次載入皆會隨機抽取不同挖空部位與干擾選項）：</span
+      >
+      <span id="clozeDifficultyTag" class="text-amber-300 font-medium"
+        >隨機考點模式</span
+      >
+    </div>
+    <div
+      id="clozeOptionsGrid"
+      class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"
+    ></div>
+  </div>
+</div>

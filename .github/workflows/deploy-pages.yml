@@ -44,7 +44,7 @@ jobs:
       - name: Build for Pages
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
-        # Vite rewrites HTML asset URLs, including the image and local BGM.
+        # Vite sets JS/CSS paths; the page composer uses BASE_URL for images/BGM.
         run: npm run build -- --base="${PAGES_BASE_PATH}/"
 
       - name: Upload Pages artifact

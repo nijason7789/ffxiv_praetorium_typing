@@ -1,0 +1,117 @@
+<section id="viewGameStage" class="flex flex-col gap-4">
+  <div
+    id="sessionNoticeBox"
+    class="hidden text-sm text-amber-200"
+    role="status"
+  >
+    <p id="sessionNotice" class="hidden"></p>
+    <button id="sessionReload" type="button" class="hidden underline mt-2">
+      重新整理頁面
+    </button>
+  </div>
+  <!-- Optional RPG Dialogue Question Modal -->
+  <div
+    id="rpgPromptCard"
+    class="hidden ff-dialogue-box rounded-xl p-4 sm:p-5 border-2 border-amber-400/80"
+  >
+    <div class="flex items-center justify-between mb-3">
+      <span
+        class="ff-speaker-tag px-3 py-0.5 rounded text-xs font-bold tracking-wider"
+        >過場互動問題 • 蓋烏斯的質問</span
+      >
+      <span class="text-xs text-amber-300/90"
+        >選擇任一回答即可獲得「超越之力」加分並繼續</span
+      >
+    </div>
+    <p
+      id="rpgPromptQuestion"
+      class="text-base sm:text-lg font-serif-tc font-bold text-amber-100 mb-3"
+    >
+      「冒險者，你是為了什麼而戰鬥的？」
+    </p>
+    <div
+      id="rpgChoicesContainer"
+      class="grid grid-cols-1 sm:grid-cols-2 gap-2"
+    ></div>
+  </div>
+
+  <!-- Main FFXIV Cutscene Dialogue Frame -->
+  <div
+    id="cutsceneDialogueCard"
+    class="ff-dialogue-box rounded-xl p-4 sm:p-6 relative"
+  >
+    <!-- Speaker Nameplate & Line Info -->
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex items-center gap-2">
+        <span
+          id="speakerBadge"
+          class="ff-speaker-tag px-3.5 py-1 rounded-md text-xs sm:text-sm font-bold tracking-wide"
+        >
+          蓋烏斯·范·巴埃薩
+        </span>
+        <span
+          id="lineContextBadge"
+          class="text-xs px-2.5 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700"
+        >
+          第一幕 • 升降機演講
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          id="btnPrevLine"
+          type="button"
+          class="px-2.5 py-1 rounded text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700"
+        >
+          ◀ 上一句
+        </button>
+        <button
+          id="btnNextLine"
+          type="button"
+          class="px-2.5 py-1 rounded text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700"
+        >
+          下一句 ▶
+        </button>
+      </div>
+    </div>
+
+    <!-- Cross-Language Subtitles Box -->
+    <div
+      id="subtitlesBox"
+      class="mb-3 px-3 py-2 rounded-lg bg-slate-950/75 border border-slate-800/90 text-xs space-y-1"
+    >
+      <div class="flex items-start gap-2 text-amber-200/85">
+        <span
+          id="subTag1"
+          class="px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 font-semibold shrink-0"
+          >JP</span
+        >
+        <span id="jpSubtitleText" class="font-medium tracking-wide"
+          >問おう……。うぬは、何のために闘う？</span
+        >
+      </div>
+      <div class="flex items-start gap-2 text-slate-400">
+        <span
+          id="subTag2"
+          class="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-semibold shrink-0"
+          >EN</span
+        >
+        <span id="enSubtitleText" class="italic"
+          >Tell me. For whom do you fight?</span
+        >
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- SUB-PANEL A: STANDARD TYPING MODE                 -->
+    <!-- ================================================= -->
+    <!-- component: typing-panel -->
+
+    <!-- ================================================= -->
+    <!-- SUB-PANEL B: CLOZE (FILL-IN-THE-BLANK) MODE       -->
+    <!-- ================================================= -->
+    <!-- component: cloze-panel -->
+  </div>
+
+  <!-- Stage Completion Summary Card -->
+  <!-- component: results -->
+</section>

@@ -1,0 +1,39 @@
+<section
+  id="viewScriptArchive"
+  class="hidden ff-window rounded-xl p-4 sm:p-6 space-y-5"
+>
+  <div
+    class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800"
+  >
+    <div>
+      <h2 class="text-lg sm:text-xl font-serif-tc font-bold text-amber-200">
+        📜 《最終決戰 天幕魔導城》三語演講全文與遊戲巨集（繁中／日文／英文）
+      </h2>
+      <p class="text-xs text-slate-400 mt-0.5">
+        點擊任一段落即可直接從該句開始打字或隨機填空練習，或一鍵複製當前語言完整台詞
+      </p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button
+        id="btnCopyFullSpeech"
+        type="button"
+        class="ff-btn-gold px-3.5 py-2 rounded-lg text-xs font-bold"
+      >
+        📋 複製蓋老師演講全文
+      </button>
+      <button
+        id="btnCopyFFMacro"
+        type="button"
+        class="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-200 border border-amber-500/40"
+      >
+        ⚡ 複製 FFXIV 隊伍頻道喊話巨集 (/p)
+      </button>
+    </div>
+  </div>
+
+  <!-- Full Script List -->
+  <div
+    id="scriptArchiveContainer"
+    class="space-y-2.5 max-h-[520px] overflow-y-auto pr-1"
+  ></div>
+</section>

@@ -10,15 +10,17 @@
 
 ## 檔案分工
 
-- `index.html`：頁面結構。元素 ID 與事件、渲染程式相互依賴，修改時一併檢查引用。
-- `src/main.ts`：程式入口與樣式載入。
+- `index.html`：文件資訊、body 樣式與 `#app` 掛載點。
+- `src/main.ts`：樣式載入並呼叫 `src/ui/bootstrap.ts`；先組裝頁面，再檢查元件與初始化事件。
+- `src/ui/components/*.html`：依畫面區塊拆分的靜態模板；`page.html` 為外層版型，`game-stage.html` 組合打字、填空與結算。元素 ID 與控制器相互依賴，修改時一併檢查引用。
+- `src/ui/page.ts`：以 Vite `?raw` 匯入並組裝可信的本機模板，保持 header／main／footer 位於 body 下；`data-public-src` 素材路徑依 Vite BASE_URL 設定。
 - `src/data/praetorium.ts`：繁中、日文、英文台詞及各語言的填空詞、干擾選項。
 - `src/game/types.ts`、`state.ts`：領域型別與遊戲狀態。
 - `src/game/text.ts`：文字正規化、語言選取、標點略過。
 - `src/game/input-source.ts`：編輯前後的字元來源追蹤；自動標點及輔助字元的來源需跨後續輸入保留。
 - `src/game/statistics.ts`：純計時與統計規則；控制器負責傳入時間、有效題目與保存結算結果。
 - `src/game/app.ts`：遊戲控制、渲染與結算；`src/game/scoring.ts`：不依賴 DOM 的計分規則與同局獎勵紀錄。新增可獨立測試的遊戲規則時，優先抽成純函式。
-- `src/ui/events.ts`：使用者操作與輸入法事件；`src/ui/dom.ts` 提供具型別及存在檢查的 DOM 存取。
+- `src/ui/events.ts`：透過 `initializeApp()` 明確初始化操作與輸入法事件，重複呼叫不重綁；`src/ui/dom.ts` 提供具型別及存在檢查的 DOM 存取。
 - `src/ui/required-elements.ts`：啟動前的必要靜態 ID 清單，新增控制器依賴時同步更新；動態產生的元素由使用時檢查。
 - `src/ui/page-error.ts`：獨立錯誤畫面與缺件錯誤界線；錯誤復原不可再依賴原本的必要 ID，且不能吞掉其他程式錯誤。
 - `src/ui/ime.ts`：一般打字與填空的組字事件保護。換題、重新抽詞、重開或結算時需清除保護狀態，避免舊組字事件套用至新題目。
@@ -35,6 +37,7 @@
 - `tests/clipboard.integration.test.ts`：複製成功、備援、最終失敗、焦點還原及提示競態的 BDD 情境。
 - `tests/audio.test.ts`、`tests/audio.integration.test.ts`：音效初始化／恢復／節點失敗，以及不中斷遊戲或 BGM 的 BDD 情境。
 - `tests/page-error.test.ts`、`tests/page-error.integration.test.ts`：必要元件缺失、停止場次、焦點與重新整理，以及錯誤界線的 BDD 情境。
+- `tests/helpers/page.ts`：整合測試使用正式模板與組裝器，不另複製整份 HTML；`tests/page.test.ts` 驗證組裝、部署素材路徑及啟動順序。
 
 ## 行為與實作原則
 
@@ -45,6 +48,7 @@
 - 既有輔助作答與計分規則是目前行為，不代表公平競賽規格。調整時說明對字速、精準度、Combo 與得分的影響。
 - 維持 TypeScript strict；優先補正確的型別，避免以 `any` 或停用檢查掩蓋問題。
 - 題目和使用者輸入優先透過 `textContent` 呈現；若必須產生 HTML，避免直接插入未受信任內容。
+- 頁面模板只在啟動時組裝一次；不要為換題重建整頁，以免丟失事件、IME、BGM 與焦點狀態。模板不接受使用者字串插值，遊戲動態渲染仍使用既有控制器。
 - 保留素材版權標示。音效與 BGM 的載入或播放失敗不應阻止作答。
 - 音效恢復尚未完成時略過音符，不累積延後播放；音符結束或建立失敗時安全中斷節點連線，清理失敗也不能向遊戲拋錯。
 - 不直接編輯 `dist/`、`node_modules/` 或 `.npm-cache/`；依賴異動需同步更新 `package-lock.json`。

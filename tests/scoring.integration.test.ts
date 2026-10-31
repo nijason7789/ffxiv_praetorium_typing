@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { readFileSync } from "node:fs";
+import { mountPageFixture } from "./helpers/page";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState, ScriptLine } from "../src/game/types";
 
@@ -14,17 +14,8 @@ vi.mock("../src/services/bgm", () => ({
 }));
 
 async function bindEvents() {
-  // Run this fixture's initializer without leaving listeners on the shared window.
-  let initialize = () => {};
-  const listenerSpy = vi
-    .spyOn(window, "addEventListener")
-    .mockImplementation((type, listener) => {
-      if (type === "DOMContentLoaded" && typeof listener === "function")
-        initialize = () => listener.call(window, new Event(type));
-    });
-  await import("../src/ui/events");
-  listenerSpy.mockRestore();
-  initialize();
+  const { initializeApp } = await import("../src/ui/events");
+  initializeApp();
   state.queue = [
     question("first", "ABCDEFGHIJKL"),
     question("second", "SECOND"),
@@ -54,9 +45,7 @@ beforeEach(async () => {
   vi.resetModules();
   vi.useFakeTimers();
   vi.setSystemTime(new Date("2026-10-31T00:00:00Z"));
-  document.body.innerHTML = readFileSync("index.html", "utf8")
-    .match(/<body[^>]*>([\s\S]*)<\/body>/)![1]
-    .replace(/<script[\s\S]*?<\/script>/g, "");
+  mountPageFixture();
   document.querySelector("#langSelectModal")!.classList.add("hidden");
   const audio = await import("../src/services/audio");
   audio.soundFX.enabled = false;

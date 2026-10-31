@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { readFileSync } from "node:fs";
+import { mountPageFixture } from "./helpers/page";
 import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { state } from "../src/game/state";
 import { PRAETORIUM_SCRIPT } from "../src/data/praetorium";
@@ -21,12 +21,9 @@ vi.mock("../src/services/bgm", () => ({
 beforeAll(async () => {
   vi.useFakeTimers();
   soundFX.enabled = false;
-  const html = readFileSync("index.html", "utf8");
-  document.body.innerHTML = html
-    .match(/<body[^>]*>([\s\S]*)<\/body>/)![1]
-    .replace(/<script[\s\S]*?<\/script>/g, "");
-  await import("../src/ui/events");
-  window.dispatchEvent(new Event("DOMContentLoaded"));
+  mountPageFixture();
+  const { initializeApp } = await import("../src/ui/events");
+  initializeApp();
   expect(initializeBgm).toHaveBeenCalledOnce();
 });
 
