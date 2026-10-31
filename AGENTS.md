@@ -27,6 +27,7 @@
 - `src/ui/required-elements.ts`：啟動前的必要靜態 ID 清單，新增控制器依賴時同步更新；動態產生的元素由使用時檢查。
 - `src/ui/page-error.ts`：獨立錯誤畫面與缺件錯誤界線；錯誤復原不可再依賴原本的必要 ID，且不能吞掉其他程式錯誤。
 - `src/ui/ime.ts`：一般打字與填空的組字事件保護。換題、重新抽詞、重開或結算時需清除保護狀態，避免舊組字事件套用至新題目。
+- `src/ui/input-restrictions.ts`：正式作答欄與單句原型共用的貼上／拖放限制、三秒提示及事件去重；依難度的 `paste`／`textDrop` 權限判斷，不以字數或鍵盤事件猜測 IME。題目／場次重設、結算與頁面錯誤需呼叫 `resetInputRestrictions()`；`inputRestrictionNotice` 是模組動態建立的共用狀態提示，不列入靜態必要 ID。
 - `src/services/clipboard.ts`：Clipboard API 與備援複製；`src/ui/copy-feedback.ts`：共用複製提示及可取消的三秒計時器。
 - `src/services/`：打字音效與本機 BGM 控制，避免將播放邏輯混入文字比對或計分。
 - `src/styles/`：Tailwind 入口與主題樣式。新增 class 時須確認 Tailwind 能從原始碼掃描到完整名稱。
@@ -43,6 +44,7 @@
 - `tests/helpers/page.ts`：整合測試使用正式模板與組裝器，不另複製整份 HTML；`tests/page.test.ts` 驗證組裝、部署素材路徑及啟動順序。
 - `tests/fixed-mask.test.ts`、`tests/memory-prototype.test.ts`：固定多處遮罩、絕包含零式遮罩並保留文字、無效設定，以及單句原型作答／重開／IME 的 BDD 情境。
 - `tests/memory-session.integration.test.ts`：正式零式／絕三語完整四章通關、無輔助及導覽、嚴格標點、偏好恢復、IME、舊計時器取消與替代譯名的 BDD 情境。
+- `tests/input-restrictions.integration.test.ts`：貼上／拖放權限、beforeinput 備援、原文／選取／計時保留、提示競態、普通填空、IME、換題／結算與錯誤情境；規格及裝置驗收見 `docs/BDD-INPUT-RESTRICTIONS.md`。
 
 ## 行為與實作原則
 

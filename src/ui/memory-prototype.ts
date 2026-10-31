@@ -14,6 +14,11 @@ import { state } from "../game/state";
 import { normalizeForCompare } from "../game/text";
 import type { Language } from "../game/types";
 import { bindIme, resetImeGuards } from "./ime";
+import {
+  bindInputRestrictions,
+  resetInputRestrictions,
+} from "./input-restrictions";
+import type { MemoryDifficulty } from "../game/fixed-mask";
 import { element } from "./dom";
 
 export function mountMemoryPrototype() {
@@ -41,6 +46,7 @@ export function mountMemoryPrototype() {
   let target = "";
   let questionId = "";
   function setup() {
+    resetInputRestrictions();
     resetImeGuards();
     active = false;
     score = createScoringState();
@@ -94,10 +100,15 @@ export function mountMemoryPrototype() {
     active = false;
     input.disabled = true;
     clock = pauseTypingClock(clock, Date.now());
+    resetInputRestrictions();
     const stats = calculateStats(score, clock, [questionId], false, Date.now());
     element("memoryResult").textContent =
       `本句完成！精準度 ${stats.accuracy}%・CPM ${stats.cpm}・完成 1 / 1 題`;
   }
+  bindInputRestrictions(input, {
+    isActive: () => active,
+    getDifficulty: () => difficulty.value as MemoryDifficulty,
+  });
   bindIme(input, {
     isActive: () => active,
     onCompositionChange: (value) => {

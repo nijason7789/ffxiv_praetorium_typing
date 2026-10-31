@@ -37,6 +37,7 @@ import {
 } from "./statistics";
 import { element } from "../ui/dom";
 import { resetImeGuards } from "../ui/ime";
+import { resetInputRestrictions } from "../ui/input-restrictions";
 import { hasPageError, onPageError } from "../ui/page-error";
 import type { ScriptLine, Language, Mode, Act } from "./types";
 let advanceTimer: ReturnType<typeof setTimeout> | undefined;
@@ -45,6 +46,7 @@ let resumeAfterArchive = false;
 let archiveNeedsRender = false;
 
 onPageError(() => {
+  resetInputRestrictions();
   cancelPendingAdvance();
   pauseClock();
   resetImeGuards();
@@ -54,6 +56,7 @@ onPageError(() => {
 });
 
 function resetCompositionState() {
+  resetInputRestrictions();
   resetImeGuards();
   state.isComposing = false;
   element("imeStatusBadge").classList.add("hidden");

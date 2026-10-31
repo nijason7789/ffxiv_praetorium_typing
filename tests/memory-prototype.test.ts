@@ -20,6 +20,35 @@ afterEach(() => {
   vi.useRealTimers();
 });
 describe("Feature: 零式／絕單句原型", () => {
+  it.each(["savage", "ultimate"])(
+    "[INPUT-16] Given %s, Then 貼上與拖放被阻擋，重開清除提示，手打仍可完成",
+    (difficulty) => {
+      const select = node("memoryDifficulty") as HTMLSelectElement;
+      select.value = difficulty;
+      select.dispatchEvent(new Event("change"));
+      click("memoryStart");
+      for (const kind of ["paste", "drop"]) {
+        expect(
+          input().dispatchEvent(new Event(kind, { cancelable: true })),
+        ).toBe(false);
+        expect(input().value).toBe("");
+        expect(node("memoryStats").textContent).toContain("分數 0");
+      }
+      expect(node("inputRestrictionNotice").classList.contains("hidden")).toBe(
+        false,
+      );
+      click("memoryRestart");
+      expect(node("inputRestrictionNotice").classList.contains("hidden")).toBe(
+        true,
+      );
+      type("冒險者，你是為了什麼而戰鬥的？");
+      expect(node("memoryResult").textContent).toContain("本句完成");
+      input().dispatchEvent(new Event("paste", { cancelable: true }));
+      expect(node("inputRestrictionNotice").classList.contains("hidden")).toBe(
+        true,
+      );
+    },
+  );
   it("When 開局, Then 保留題目識別並鎖定語言與開局題目，沒有輔助導覽", () => {
     click("memoryStart");
     expect((node("memoryQuestion") as HTMLSelectElement).disabled).toBe(true);

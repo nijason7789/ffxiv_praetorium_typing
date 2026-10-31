@@ -4,6 +4,8 @@ interface DifficultyRules {
   readonly label: string;
   readonly target: "full" | "savage" | "ultimate";
   readonly typingAssistance: boolean;
+  readonly paste: boolean;
+  readonly textDrop: boolean;
   readonly cloze: boolean;
   readonly subtitles: boolean;
   readonly skipPunctuation: boolean;
@@ -18,6 +20,8 @@ const standardRules: DifficultyRules = {
   label: "體驗",
   target: "full",
   typingAssistance: true,
+  paste: true,
+  textDrop: true,
   cloze: true,
   subtitles: true,
   skipPunctuation: true,
@@ -31,6 +35,8 @@ const memoryRules: DifficultyRules = {
   label: "零式",
   target: "savage",
   typingAssistance: false,
+  paste: false,
+  textDrop: false,
   cloze: false,
   subtitles: false,
   skipPunctuation: false,
@@ -43,7 +49,13 @@ const memoryRules: DifficultyRules = {
 
 const rules: Readonly<Record<Difficulty, DifficultyRules>> = {
   experience: standardRules,
-  challenge: { ...standardRules, label: "普通", typingAssistance: false },
+  challenge: {
+    ...standardRules,
+    label: "普通",
+    typingAssistance: false,
+    paste: false,
+    textDrop: false,
+  },
   savage: memoryRules,
   ultimate: { ...memoryRules, label: "絕", target: "ultimate" },
 };

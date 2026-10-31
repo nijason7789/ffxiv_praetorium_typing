@@ -20,6 +20,7 @@ import { element } from "./dom";
 import type { Act } from "../game/types";
 import { initializeSetup } from "./setup";
 import { bindIme } from "./ime";
+import { bindInputRestrictions } from "./input-restrictions";
 import { copyWithFeedback } from "./copy-feedback";
 import { assertRequiredElements } from "./required-elements";
 import { installPageErrorBoundary, runPageAction } from "./page-error";
@@ -145,6 +146,10 @@ export function initializeApp() {
       state.isComposing = composing;
       imeBadge.classList.toggle("hidden", !composing);
     };
+    bindInputRestrictions(typingInput, {
+      isActive: () => canUseInput("panelStandardTyping"),
+      getDifficulty: () => state.difficulty,
+    });
     bindIme(typingInput, {
       isActive: () => canUseInput("panelStandardTyping"),
       onCompositionChange,
@@ -177,6 +182,10 @@ export function initializeApp() {
 
     // Cloze Mode Input & Buttons
     const clozeInput = element("clozeInput");
+    bindInputRestrictions(clozeInput, {
+      isActive: () => canUseInput("panelClozeMode"),
+      getDifficulty: () => state.difficulty,
+    });
     bindIme(clozeInput, {
       isActive: () => canUseInput("panelClozeMode"),
       onCompositionChange,
