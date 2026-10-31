@@ -419,8 +419,7 @@ export function renderCurrentStep() {
       : "⌨️ 過場台詞打字";
   element("lineContextBadge").textContent =
     `${getLineActTitle(item)} • ${stepTypeLabel}`;
-  element("stageBadge").textContent =
-    item.act === "act4" ? "究極神兵核心戰" : "天幕魔導城升降機";
+  element("stageBadge").textContent = "天幕魔導城升降機";
 
   // Cross-language Subtitles
   renderSubtitlesForLanguage(item);

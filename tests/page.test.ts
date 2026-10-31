@@ -82,7 +82,7 @@ describe("Feature: 頁面元件組裝", () => {
     expect(document.querySelector("#statScore")!.textContent).toBe("50");
     document.querySelector<HTMLButtonElement>("#btnNextLine")!.click();
     expect(document.querySelector("#stageStepCounter")!.textContent).toBe(
-      "(2 / 24)",
+      "(2 / 17)",
     );
   });
 });

@@ -5,6 +5,20 @@ import { ULTIMATE_MASKS } from "../src/data/ultimate-masks";
 import { PRAETORIUM_SCRIPT } from "../src/data/praetorium";
 
 describe("Feature: 固定難度遮罩", () => {
+  it("Given 天幕魔導城題庫, Then 只保留 L01 至 L17 並在第三幕結束", () => {
+    expect(PRAETORIUM_SCRIPT.map((line) => line.id)).toEqual(
+      Array.from(
+        { length: 17 },
+        (_, index) => `L${String(index + 1).padStart(2, "0")}`,
+      ),
+    );
+    expect([...new Set(PRAETORIUM_SCRIPT.map((line) => line.act))]).toEqual([
+      "act1",
+      "act2",
+      "act3",
+    ]);
+    expect(PRAETORIUM_SCRIPT.at(-1)?.act).toBe("act3");
+  });
   it("Given 完整台詞題庫, Then 三語零式與絕的設定涵蓋所有題目且無額外題號", () => {
     const ids = PRAETORIUM_SCRIPT.map((line) => line.id).sort();
     expect(Object.keys(SAVAGE_MASKS).sort()).toEqual(ids);

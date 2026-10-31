@@ -1,7 +1,7 @@
 import type { Localized } from "../game/types";
 import type { MaskRule } from "../game/fixed-mask";
 
-export const FIXED_MASK_VERSION = "fixed-v3";
+export const FIXED_MASK_VERSION = "fixed-v4";
 
 const words = (...texts: string[]): MaskRule[] =>
   texts.map((text) => ({ text, occurrence: 0 }));
@@ -67,44 +67,6 @@ export const SAVAGE_MASKS: Record<string, Localized<readonly MaskRule[]>> = {
     zh: words("鐵腕統治", "艾歐澤亞", "新生"),
     jp: words("エオルゼア", "新生", "力有る"),
     en: words("realm", "power"),
-  },
-  L18: {
-    zh: words("統治者", "力量", "使用方法"),
-    jp: words("統べる者", "使い方", "無意味"),
-    en: words("fought", "strength", "wisdom"),
-  },
-  L19: {
-    zh: words("究極神兵", "力量"),
-    jp: words("使い方", "アルテマウェポン", "真の力"),
-    en: words("power", "might", "Ultima Weapon"),
-  },
-  L20: {
-    zh: words("核心", "黑蛇", "古亞拉戈帝國", "超級文明"),
-    jp: words("古代アラグ帝国", "超文明", "アルテマウェポン", "黒聖石サビク"),
-    en: words("core", "Heart of Sabik", "Allag"),
-  },
-  L21: {
-    zh: words("生命", "七重之門", "力量之塔"),
-    jp: words("生命", "七つ", "力の塔"),
-    en: words("seven hells", "heavens", "Ultima"),
-  },
-  L22: {
-    zh: words("威力", "究極神兵", "武器"),
-    jp: words("威力", "武器", "アルテマウェポン"),
-    en: words("devastation", "intention"),
-  },
-  L23: {
-    zh: [
-      { text: "懦弱的執政者", occurrence: 0 },
-      { text: "執政", occurrence: 1 },
-    ],
-    jp: words("弱き為政者"),
-    en: words("Weak rulers", "weak rulers"),
-  },
-  L24: {
-    zh: words("惡性循環", "真理"),
-    jp: words("流れ", "断ち切れぬ", "真理"),
-    en: words("strength", "cycle", "truth", "power"),
   },
   L01: {
     zh: [

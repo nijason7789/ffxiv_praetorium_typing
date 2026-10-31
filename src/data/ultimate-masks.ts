@@ -67,53 +67,6 @@ const EXTRA_MASKS: Record<string, Localized<readonly MaskRule[]>> = {
     jp: words("我が手"),
     en: words("right", "stop"),
   },
-  L18: {
-    zh: words("精彩", "領悟"),
-    jp: words("素晴らしい", "間違えば"),
-    en: words("rule", "wield"),
-  },
-  L19: {
-    zh: words("教你", "真正"),
-    jp: words("教えて", "見せて"),
-    en: words("teach", "Witness"),
-  },
-  L20: {
-    zh: words("研究", "皮毛"),
-    jp: words("表層", "解明"),
-    en: words("surface", "brilliant"),
-  },
-  L21: {
-    zh: words("渦旋流轉", "君臨"),
-    jp: words("渦なす", "開き"),
-    en: words("deepest", "tremble"),
-  },
-  L22: {
-    zh: words("強大", "體內"),
-    jp: words("このような"),
-    en: words("NOT", "my"),
-  },
-  L23: {
-    zh: [
-      { text: "愚昧", occurrence: 0 },
-      { text: "愚昧", occurrence: 1 },
-    ],
-    jp: [
-      { text: "愚民", occurrence: 0 },
-      { text: "愚民", occurrence: 1 },
-    ],
-    en: [
-      { text: "foolish", occurrence: 0 },
-      { text: "foolish", occurrence: 1 },
-    ],
-  },
-  L24: {
-    zh: [
-      { text: "強大的力量", occurrence: 0 },
-      { text: "強大的力量", occurrence: 1 },
-    ],
-    jp: words("力を持たねば", "理解"),
-    en: words("break", "see"),
-  },
   L01: {
     zh: [{ text: "你是為了", occurrence: 0 }],
     jp: [{ text: "うぬ", occurrence: 0 }],

@@ -50,6 +50,9 @@ describe("Feature: 零式／絕單句原型", () => {
     },
   );
   it("When 開局, Then 保留題目識別並鎖定語言與開局題目，沒有輔助導覽", () => {
+    const options = (node("memoryQuestion") as HTMLSelectElement).options;
+    expect(options.length).toBe(17);
+    expect(options[options.length - 1].value).toBe("L17");
     click("memoryStart");
     expect((node("memoryQuestion") as HTMLSelectElement).disabled).toBe(true);
     expect(node("memoryContext").textContent).toContain("第 1 / 1 題");

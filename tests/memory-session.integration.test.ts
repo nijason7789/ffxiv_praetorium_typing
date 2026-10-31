@@ -46,6 +46,35 @@ afterEach(() => {
 });
 
 describe("Feature: 正式零式／絕固定場次", () => {
+  it.each(
+    (["Experience", "Challenge"] as const).flatMap((choice) =>
+      (["Typing", "Cloze", "Exam"] as const).map((mode) => ({ choice, mode })),
+    ),
+  )(
+    "Given $choice/$mode, Then 第三幕末句作答後直接結算，全文也只保留十七句",
+    async ({ choice, mode }) => {
+      choose(choice);
+      expect(document.querySelector('[data-act="act4"]')).toBe(null);
+      click("navModeScript");
+      expect(node("scriptArchiveContainer").children.length).toBe(17);
+      expect(document.querySelector('[data-jump-idx="17"]')).toBe(null);
+      click("navMode" + mode);
+      const { state, answer } = await game();
+      expect(state.queue).toHaveLength(17);
+      for (let index = 0; index < 16; index++) click("btnNextLine");
+      expect(state.queue[state.currentIndex].id).toBe("L17");
+      if (mode === "Cloze") {
+        (node("clozeInput") as HTMLInputElement).value = state.activeClozeBlank;
+        click("btnSubmitCloze");
+      } else type(answer());
+      vi.advanceTimersByTime(650);
+      expect(state.currentIndex).toBe(17);
+      expect(state.result).toMatchObject({ total: 17, completed: 1 });
+      expect(node("stageCompleteModal").classList.contains("hidden")).toBe(
+        false,
+      );
+    },
+  );
   it.each([
     { choice: "Experience", label: "體驗", assists: true, standard: true },
     { choice: "Challenge", label: "普通", assists: false, standard: true },
@@ -105,7 +134,7 @@ describe("Feature: 正式零式／絕固定場次", () => {
     },
   );
   it.each(["zh", "jp", "en"] as const)(
-    "Given %s, Then 兩種難度皆依序通過完整四章題庫並鎖定結算",
+    "Given %s, Then 兩種難度皆依序通過完整三章題庫並鎖定結算",
     async (language) => {
       const { state, answer } = await game();
       state.lang = language;
@@ -114,7 +143,7 @@ describe("Feature: 正式零式／絕固定場次", () => {
         expect(state.queue.map((line) => line.id)).toEqual(
           PRAETORIUM_SCRIPT.map((line) => line.id),
         );
-        expect(new Set(state.queue.map((line) => line.act)).size).toBe(4);
+        expect(new Set(state.queue.map((line) => line.act)).size).toBe(3);
         const total = PRAETORIUM_SCRIPT.length;
         expect(node("stageStepCounter").textContent).toBe(`(1 / ${total})`);
         for (let index = 0; index < total; index++) {
@@ -177,7 +206,7 @@ describe("Feature: 正式零式／絕固定場次", () => {
       ])
         click(id);
       (
-        document.querySelector('[data-act="act4"]') as HTMLButtonElement
+        document.querySelector('[data-act="act3"]') as HTMLButtonElement
       ).click();
       rpg.click();
       expect(state.mode).toBe("typing");
