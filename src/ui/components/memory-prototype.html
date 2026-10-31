@@ -1,0 +1,80 @@
+<main class="mx-auto w-full max-w-3xl space-y-5 p-4 sm:p-6">
+  <header class="space-y-2">
+    <h1 class="text-xl font-bold text-amber-200">零式／絕・單句原型</h1>
+    <p class="text-sm text-slate-300">
+      固定出題，輸入完整台詞。此頁供玩法確認，尚未接入正式難度選單。
+    </p>
+  </header>
+  <section class="ff-window space-y-4 rounded-xl p-4">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <label class="text-sm"
+        >版本
+        <select
+          id="memoryLanguage"
+          class="mt-1 w-full rounded bg-slate-900 p-2"
+        >
+          <option value="zh">繁體中文</option>
+          <option value="jp">日本語</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+      <label class="text-sm"
+        >難度
+        <select
+          id="memoryDifficulty"
+          class="mt-1 w-full rounded bg-slate-900 p-2"
+        >
+          <option value="savage">零式</option>
+          <option value="ultimate">絕</option>
+        </select>
+      </label>
+      <label class="text-sm"
+        >開局題目
+        <select
+          id="memoryQuestion"
+          class="mt-1 w-full rounded bg-slate-900 p-2"
+        ></select>
+      </label>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <button
+        id="memoryStart"
+        type="button"
+        class="ff-btn-gold rounded px-4 py-2"
+      >
+        開始練習
+      </button>
+      <button
+        id="memoryRestart"
+        type="button"
+        class="rounded border border-slate-500 px-4 py-2"
+      >
+        重新開始
+      </button>
+    </div>
+  </section>
+  <section class="ff-window space-y-4 rounded-xl p-4">
+    <p id="memoryContext" class="text-sm text-amber-200"></p>
+    <p
+      id="memoryTarget"
+      class="min-h-24 break-all font-serif-tc text-lg leading-relaxed sm:text-2xl"
+    ></p>
+    <div class="flex min-h-6 items-center justify-between gap-2">
+      <label for="memoryInput" class="text-sm">完整台詞</label>
+      <span id="memoryIme" class="hidden text-xs text-sky-300">選字中…</span>
+    </div>
+    <input
+      id="memoryInput"
+      type="text"
+      disabled
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      class="w-full min-w-0 rounded-lg border-2 border-amber-500 bg-slate-900 px-3 py-3 text-base"
+      placeholder="開始練習後輸入完整台詞"
+    />
+    <p id="memoryStats" class="text-sm text-slate-300"></p>
+    <p id="memoryResult" class="text-sm text-emerald-300" role="status"></p>
+  </section>
+</main>
