@@ -46,6 +46,21 @@ afterEach(() => {
 });
 
 describe("Feature: 正式零式／絕固定場次", () => {
+  it.each(["Savage", "Ultimate"] as const)(
+    "Given %s, When 使用半形逗號問號作答, Then 不計錯且維持完整計分與換題",
+    async (difficulty) => {
+      choose(difficulty);
+      const { state, answer } = await game();
+      const target = answer();
+      type(target.replaceAll("，", ",").replaceAll("？", "?"));
+      expect(state.errorCount).toBe(0);
+      expect(state.correctChars).toBe(target.length);
+      expect(state.combo).toBe(target.length);
+      expect(state.hasUsedAssistance).toBe(false);
+      vi.advanceTimersByTime(180);
+      expect(state.currentIndex).toBe(1);
+    },
+  );
   it.each(["zh", "jp", "en"] as const)(
     "Given %s, Then 兩種難度皆依序通過完整四章題庫並鎖定結算",
     async (language) => {

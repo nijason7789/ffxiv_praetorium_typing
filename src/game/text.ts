@@ -46,10 +46,31 @@ export function getLineActTitle(item: ScriptLine) {
   return item.actTitle[state.lang] || item.actTitle.zh;
 }
 
+/** Normalize punctuation only, one code unit at a time to preserve scoring positions. */
+export function normalizePunctuation(str: string) {
+  const variants: Record<string, string> = {
+    "。": ".",
+    "｡": ".",
+    "、": ",",
+    "､": ",",
+    "｢": "「",
+    "｣": "」",
+    "･": "・",
+  };
+  return str.replace(
+    /[\uFF01-\uFF5E。｡、､｢｣･]/g,
+    (char) =>
+      variants[char] ??
+      (/\p{P}/u.test(char)
+        ? String.fromCharCode(char.charCodeAt(0) - 0xfee0)
+        : char),
+  );
+}
+
 // Normalize variants (艾歐澤亞/艾奧傑亞, 乙太/以太, case-insensitive in English)
 export function normalizeForCompare(str: string) {
   if (!str) return "";
-  let out = str
+  let out = normalizePunctuation(str)
     .replace(/艾奧傑亞/g, "艾歐澤亞")
     .replace(/以太/g, "乙太")
     .replace(/裡/g, "裏")
