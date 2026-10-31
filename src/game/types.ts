@@ -1,6 +1,6 @@
 export type Language = "zh" | "jp" | "en";
 export type Mode = "typing" | "cloze" | "exam" | "script";
-export type Difficulty = "experience" | "challenge";
+export type Difficulty = "experience" | "challenge" | "savage" | "ultimate";
 export type Act = "act1" | "act2" | "act3" | "act4";
 export type Localized<T> = Record<Language, T>;
 export interface ScriptLine {

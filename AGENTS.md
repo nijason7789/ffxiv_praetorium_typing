@@ -17,8 +17,9 @@
 - `src/data/praetorium.ts`：繁中、日文、英文台詞及各語言的填空詞、干擾選項。
 - `src/game/types.ts`、`state.ts`：領域型別與遊戲狀態。
 - `src/game/text.ts`：文字正規化、語言選取、標點略過。
-- `src/game/fixed-mask.ts`、`src/data/savage-masks.ts`：零式／絕單句原型的純遮罩規則與五句三語固定設定；與既有 clozePool／抽題歷史分離。
-- `src/ui/memory-prototype.ts`：以 `?prototype=memory` 進入的獨立原型，正式難度選單仍只有體驗／挑戰。規格與原型範圍見 `docs/FIXED-DIFFICULTY-DRAFT.md`。
+- `src/game/difficulty.ts`：四種難度名稱與記憶作答難度判斷；限制需同時涵蓋 UI 與事件入口。
+- `src/game/fixed-mask.ts`、`src/data/savage-masks.ts`、`src/data/ultimate-masks.ts`：純遮罩規則與五句三語固定設定；絕在零式規則上增加詞組，與既有 clozePool／抽題歷史分離。
+- `src/ui/memory-prototype.ts`：以 `?prototype=memory` 進入的獨立單句原型。正式選單已接入四種難度及五句場次，範圍見 `docs/FIXED-DIFFICULTY-DRAFT.md`。
 - `src/game/input-source.ts`：編輯前後的字元來源追蹤；自動標點及輔助字元的來源需跨後續輸入保留。
 - `src/game/statistics.ts`：純計時與統計規則；控制器負責傳入時間、有效題目與保存結算結果。
 - `src/game/app.ts`：遊戲控制、渲染與結算；`src/game/scoring.ts`：不依賴 DOM 的計分規則與同局獎勵紀錄。新增可獨立測試的遊戲規則時，優先抽成純函式。
@@ -40,7 +41,8 @@
 - `tests/audio.test.ts`、`tests/audio.integration.test.ts`：音效初始化／恢復／節點失敗，以及不中斷遊戲或 BGM 的 BDD 情境。
 - `tests/page-error.test.ts`、`tests/page-error.integration.test.ts`：必要元件缺失、停止場次、焦點與重新整理，以及錯誤界線的 BDD 情境。
 - `tests/helpers/page.ts`：整合測試使用正式模板與組裝器，不另複製整份 HTML；`tests/page.test.ts` 驗證組裝、部署素材路徑及啟動順序。
-- `tests/fixed-mask.test.ts`、`tests/memory-prototype.test.ts`：固定多處遮罩、僅標點遮罩、無效設定，以及單句原型作答／重開／IME 的 BDD 情境。
+- `tests/fixed-mask.test.ts`、`tests/memory-prototype.test.ts`：固定多處遮罩、絕包含零式遮罩並保留文字、無效設定，以及單句原型作答／重開／IME 的 BDD 情境。
+- `tests/memory-session.integration.test.ts`：正式零式／絕三語五句通關、無輔助及導覽、嚴格標點、偏好恢復、IME、舊計時器取消與替代譯名的 BDD 情境。
 
 ## 行為與實作原則
 

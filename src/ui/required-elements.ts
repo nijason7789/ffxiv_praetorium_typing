@@ -23,6 +23,8 @@ const requiredIds = [
   "btnRestartStage",
   "btnSelectChallenge",
   "btnSelectExperience",
+  "btnSelectSavage",
+  "btnSelectUltimate",
   "btnSelectLangEn",
   "btnSelectLangJp",
   "btnSelectLangZh",

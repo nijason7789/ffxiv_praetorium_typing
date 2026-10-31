@@ -1,4 +1,8 @@
 import { PRAETORIUM_SCRIPT, DISTRACTOR_POOL } from "../data/praetorium";
+import { SAVAGE_MASKS } from "../data/savage-masks";
+import { ULTIMATE_MASKS } from "../data/ultimate-masks";
+import { fixedMask } from "./fixed-mask";
+import { difficultyLabels, isMemoryDifficulty } from "./difficulty";
 import { soundFX } from "../services/audio";
 import { nextClozeBlank } from "../services/cloze-history";
 import { shuffle } from "./random";
@@ -83,6 +87,10 @@ function focusGameInput(input: HTMLElement) {
   }, 30);
 }
 function getFilteredQueue() {
+  if (isMemoryDifficulty(state.difficulty))
+    return PRAETORIUM_SCRIPT.filter((item) =>
+      Object.hasOwn(SAVAGE_MASKS, item.id),
+    );
   if (state.actFilter === "all") {
     return [...PRAETORIUM_SCRIPT];
   }
@@ -145,6 +153,7 @@ function showNoQuestions() {
 
 export function selectMode(mode: Mode) {
   if (hasPageError()) return;
+  if (isMemoryDifficulty(state.difficulty)) return;
   if (mode === "script") {
     if (state.mode === "script") return;
     resetCompositionState();
@@ -214,8 +223,11 @@ export function startNewSession(questions?: ScriptLine[]) {
   if (hasPageError()) return;
   cancelPendingAdvance();
   if (state.mode === "script") state.mode = state.sessionMode;
+  if (isMemoryDifficulty(state.difficulty)) state.mode = "typing";
   state.sessionMode = state.mode;
-  state.queue = questions ?? getFilteredQueue();
+  state.queue = isMemoryDifficulty(state.difficulty)
+    ? getFilteredQueue()
+    : (questions ?? getFilteredQueue());
   state.currentIndex = 0;
   state.typingClock = createTypingClock();
   state.result = null;
@@ -240,6 +252,18 @@ export function startNewSession(questions?: ScriptLine[]) {
 }
 
 export function updateNavigationTabs() {
+  const memory = isMemoryDifficulty(state.difficulty);
+  for (const id of ["btnPrevLine", "btnNextLine", "chapterSelectorBar"]) {
+    element(id).classList.toggle("hidden", memory);
+  }
+  for (const id of ["chkSkipPunct", "chkShowJp"] as const) {
+    const checkbox = element(id) as HTMLInputElement;
+    checkbox.disabled = memory;
+    checkbox.checked =
+      !memory &&
+      (id === "chkSkipPunct" ? state.skipPunct : state.showSubtitles);
+    checkbox.closest("label")!.classList.toggle("hidden", memory);
+  }
   const modes = [
     { id: "navModeTyping", key: "typing" },
     { id: "navModeCloze", key: "cloze" },
@@ -255,6 +279,7 @@ export function updateNavigationTabs() {
       btn.className =
         "px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all bg-slate-800/80 text-slate-300 border border-slate-700 hover:border-amber-500/40";
     }
+    btn.classList.toggle("hidden", memory);
   });
 
   const viewGame = element("viewGameStage");
@@ -307,8 +332,10 @@ function updateStatsUI() {
 
 function renderSubtitlesForLanguage(item: ScriptLine) {
   const subBox = element("subtitlesBox");
-  if (!state.showSubtitles) {
+  if (!state.showSubtitles || isMemoryDifficulty(state.difficulty)) {
     subBox.classList.add("hidden");
+    element("jpSubtitleText").textContent = "";
+    element("enSubtitleText").textContent = "";
     return;
   }
   subBox.classList.remove("hidden");
@@ -374,7 +401,9 @@ export function renderCurrentStep() {
   element("speakerBadge").textContent = getLineSpeaker(item);
   const stepTypeLabel = isCurrentStepCloze()
     ? "🧩 隨機台詞填空"
-    : "⌨️ 過場台詞打字";
+    : isMemoryDifficulty(state.difficulty)
+      ? `${difficultyLabels[state.difficulty]}・固定詞組填空`
+      : "⌨️ 過場台詞打字";
   element("lineContextBadge").textContent =
     `${getLineActTitle(item)} • ${stepTypeLabel}`;
   element("stageBadge").textContent =
@@ -386,7 +415,11 @@ export function renderCurrentStep() {
   // Interactive RPG Question (if present on L01 / L02)
   const rpgCard = element("rpgPromptCard");
   const scoreKey = questionKey(item);
-  if (item.rpgQuestion && !state.scoreProgress[scoreKey]?.rpgRewarded) {
+  if (
+    !isMemoryDifficulty(state.difficulty) &&
+    item.rpgQuestion &&
+    !state.scoreProgress[scoreKey]?.rpgRewarded
+  ) {
     const rq = item.rpgQuestion[state.lang] || item.rpgQuestion.zh;
     rpgCard.classList.remove("hidden");
     element("rpgPromptQuestion").textContent =
@@ -402,7 +435,12 @@ export function renderCurrentStep() {
         state.lang === "zh" ? localizeZhTerm(chLabel) : chLabel;
       btn.innerHTML = `<span>▶ ${displayLabel}</span><span class="text-[11px] text-amber-300/80">+150 pts</span>`;
       btn.addEventListener("click", () => {
-        if (!canAnswer() || state.queue[state.currentIndex] !== item) return;
+        if (
+          isMemoryDifficulty(state.difficulty) ||
+          !canAnswer() ||
+          state.queue[state.currentIndex] !== item
+        )
+          return;
         const next = scoreRpg(state, scoreKey);
         if (next === state) return;
         Object.assign(state, next);
@@ -414,6 +452,8 @@ export function renderCurrentStep() {
     });
   } else {
     rpgCard.classList.add("hidden");
+    element("rpgPromptQuestion").textContent = "";
+    element("rpgChoicesContainer").replaceChildren();
   }
 
   // Switch between Standard Typing and Cloze Mode
@@ -456,6 +496,24 @@ function renderTargetCharacters(rawInput: string, targetText: string) {
   const effectiveInput = computeEffectiveInput(rawInput, targetText);
   const normInput = normalizeForCompare(effectiveInput);
   const normTarget = normalizeForCompare(targetText);
+
+  if (isMemoryDifficulty(state.difficulty)) {
+    const item = state.queue[state.currentIndex];
+    const rules = (
+      state.difficulty === "ultimate" ? ULTIMATE_MASKS : SAVAGE_MASKS
+    )[item.id][state.lang];
+    const localizedRules = rules.map((rule) => ({
+      ...rule,
+      text: state.lang === "zh" ? localizeZhTerm(rule.text) : rule.text,
+    }));
+    displayEl.textContent = fixedMask(targetText, localizedRules);
+    return {
+      allMatched: normInput === normTarget && normTarget.length > 0,
+      effectiveInput,
+      normInput,
+      normTarget,
+    };
+  }
 
   let allMatched =
     normInput.length >= normTarget.length && normTarget.length > 0;
@@ -594,6 +652,7 @@ export function handleTypingProgress(source: InputSource = "manual") {
 // 6. MULTI-VARIANT RANDOMIZED CLOZE MODE LOGIC
 // =========================================================================
 export function renderClozeStep(item: ScriptLine, primarySentence: string) {
+  if (isMemoryDifficulty(state.difficulty)) return;
   if (!canAnswer()) return;
   resetCompositionState();
   cancelPendingAdvance();
@@ -739,7 +798,7 @@ export function finishStage() {
   element("finalCompletionVal").textContent =
     `${stats.completed} / ${stats.total} 題（${stats.completionRate}%）`;
   element("finalMaxComboVal").textContent = String(state.maxCombo);
-  const difficulty = state.difficulty === "experience" ? "體驗" : "挑戰";
+  const difficulty = difficultyLabels[state.difficulty];
   element("finalAssistanceStatus").textContent =
     `${difficulty}模式・${state.hasUsedAssistance ? "已使用輔助" : "未使用輔助"}`;
 
@@ -764,6 +823,7 @@ export function finishStage() {
 export function renderScriptArchive() {
   const container = element("scriptArchiveContainer");
   container.innerHTML = "";
+  if (isMemoryDifficulty(state.difficulty)) return;
   PRAETORIUM_SCRIPT.forEach((item, index) => {
     const row = document.createElement("div");
     row.className =
@@ -798,6 +858,7 @@ export function renderScriptArchive() {
     .querySelectorAll<HTMLButtonElement>("button[data-jump-mode]")
     .forEach((btn) => {
       btn.addEventListener("click", () => {
+        if (isMemoryDifficulty(state.difficulty)) return;
         const targetMode = btn.getAttribute("data-jump-mode");
         const idx = parseInt(btn.getAttribute("data-jump-idx")!, 10);
         state.mode = targetMode as Mode;

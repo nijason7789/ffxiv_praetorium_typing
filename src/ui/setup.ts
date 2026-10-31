@@ -4,9 +4,9 @@ import { startNewSession, updateNavigationTabs } from "../game/app";
 import { startBgmOnLanguageSelection } from "../services/bgm";
 import { soundFX } from "../services/audio";
 import { element } from "./dom";
+import { difficultyLabels } from "../game/difficulty";
 
 const languageLabels = { zh: "繁體中文", jp: "日本語", en: "English" };
-const difficultyLabels = { experience: "體驗", challenge: "挑戰" };
 type SetupStep = "language" | "difficulty" | "game";
 
 export function initializeSetup() {
@@ -67,6 +67,12 @@ export function initializeSetup() {
   );
   element("btnSelectChallenge").addEventListener("click", () =>
     chooseDifficulty("challenge"),
+  );
+  element("btnSelectSavage").addEventListener("click", () =>
+    chooseDifficulty("savage"),
+  );
+  element("btnSelectUltimate").addEventListener("click", () =>
+    chooseDifficulty("ultimate"),
   );
   element("btnBackToLanguage").addEventListener("click", () =>
     showStep("language"),

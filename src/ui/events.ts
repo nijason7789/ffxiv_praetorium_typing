@@ -11,6 +11,7 @@ import {
   selectMode,
 } from "../game/app";
 import { state } from "../game/state";
+import { isMemoryDifficulty } from "../game/difficulty";
 import { getLinePrimaryText } from "../game/text";
 import { PRAETORIUM_SCRIPT } from "../data/praetorium";
 import { soundFX } from "../services/audio";
@@ -58,6 +59,7 @@ export function initializeApp() {
     // Act filter buttons
     document.querySelectorAll<HTMLButtonElement>(".act-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
+        if (isMemoryDifficulty(state.difficulty)) return;
         state.actFilter = btn.getAttribute("data-act") as Act | "all";
         updateActButtons();
         if (state.mode === "script") {
@@ -91,16 +93,19 @@ export function initializeApp() {
 
     // Checkboxes
     element("chkSkipPunct").addEventListener("change", (e) => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       state.skipPunct = (e.target as HTMLInputElement).checked;
       renderCurrentStep();
     });
     element("chkShowJp").addEventListener("change", (e) => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       state.showSubtitles = (e.target as HTMLInputElement).checked;
       renderCurrentStep();
     });
 
     // Prev / Next / Restart buttons
     element("btnPrevLine").addEventListener("click", () => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       if (state.result || state.sessionError || state.mode === "script") return;
       if (state.currentIndex > 0) {
         state.currentIndex--;
@@ -108,6 +113,7 @@ export function initializeApp() {
       }
     });
     element("btnNextLine").addEventListener("click", () => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       if (state.result || state.sessionError || state.mode === "script") return;
       if (state.currentIndex < state.queue.length - 1) {
         state.currentIndex++;
@@ -180,11 +186,13 @@ export function initializeApp() {
       verifyClozeAnswer(clozeInput.value);
     });
     element("btnRerollCloze").addEventListener("click", () => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       const item = state.queue[state.currentIndex];
       if (!item) return;
       renderClozeStep(item, getLinePrimaryText(item));
     });
     element("btnClozeHint").addEventListener("click", () => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       if (!state.activeClozeBlank) return;
       const hintLen = state.lang === "en" ? 2 : 1;
       clozeInput.value = state.activeClozeBlank.slice(0, hintLen);
@@ -212,6 +220,7 @@ export function initializeApp() {
     });
 
     element("btnCopyFullSpeech").addEventListener("click", () => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       const lines = PRAETORIUM_SCRIPT.map((i) => getLinePrimaryText(i)).join(
         "\n",
       );
@@ -222,6 +231,7 @@ export function initializeApp() {
     });
 
     element("btnCopyFFMacro").addEventListener("click", () => {
+      if (isMemoryDifficulty(state.difficulty)) return;
       const macroLines = PRAETORIUM_SCRIPT.slice(0, 14)
         .map((i) => `/p ${getLinePrimaryText(i)} <wait.3>`)
         .join("\n");
